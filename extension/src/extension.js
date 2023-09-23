@@ -1,37 +1,42 @@
-
 const vscode = require('vscode');
-/**
- * @param {vscode.ExtensionContext} context
- */
+
+// runs when extension starts
 function activate(context) {
 	const provider = new SessionWebviewViewProvider(context.extensionUri);
 	context.subscriptions.push(vscode.window.registerWebviewViewProvider(provider.viewType, provider));
 }
 
+// runs when extension deactivates
 function deactivate() {}
 
 module.exports = {
 	activate,
 	deactivate
-}
+}; 
 
 class SessionWebviewViewProvider {
+	// Construct the class
 	constructor(extensionUri) {
 		this.extensionUri = extensionUri;
 		this.viewType = 'pair-programming-extension';
 	}
-	resolveWebviewView(view, context, token) {
+	// Called when we open the webview
+	resolveWebviewView(view) {
 		this.view = view;
 		view.webview.options = {
+			// needed to use our index.js script
 			enableScripts: true,
+			// our extension path
 			localResourceRoots: [
 				this.extensionUri,
 			]
-		}
-		view.webview.html = this._getHtmlForWebview(view.webview);
+		};
+		// we need the HTML to put our React app in the panel
+		view.webview.html = this.getWebViewContent(this.view);
 	}
 
-	_getHtmlForWebview(view) {
+	// Render webview using the HTML that would be in a React index.html file
+	getWebViewContent() {	
         return `<!DOCTYPE html>
 		<html lang="en">
 		<head>
@@ -41,8 +46,8 @@ class SessionWebviewViewProvider {
 		</head>
 		<body>
 			<div id="root">
-				<h1>Hello World</h1>
 			</div>
+			<script src="http://localhost:3000${'/index.js'}"></script>
 		</body>
 		</html>`;
 	}
