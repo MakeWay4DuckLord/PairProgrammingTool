@@ -19,7 +19,7 @@ module.exports = [
     },
     resolve: {
       // look for js first then jsx if searching for a specific filename
-      extensions: ['.js', '.jsx']
+      extensions: ['.js', '.jsx'],
     },
     module: {
       rules: [
@@ -31,7 +31,21 @@ module.exports = [
           use: [{
             loader: 'babel-loader'
           }]
-        }
+        }, 
+        {
+          use: [
+            "style-loader",
+            {
+              loader: "css-loader",
+              options: {
+                importLoaders: 0,
+                modules: true,
+              },
+            }
+          ],
+          exclude: /node_modules/,
+          test: /\.(css)$/,
+        },
       ]
     },
     // creates the server that the script is found on 
@@ -41,6 +55,7 @@ module.exports = [
       // hot modular replacement
       hot: true,
       port: 3000,
+      allowedHosts: 'all'
     }
   }
 ];

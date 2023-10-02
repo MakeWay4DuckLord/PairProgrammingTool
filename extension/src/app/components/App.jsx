@@ -1,16 +1,17 @@
 import * as React from 'react';
+import StartSession from './StartSession';
+import Session from './Session';
 
 const App = () => {
-  const [value, setValue] = React.useState('clicked: 0');
-  const [count, setCount] = React.useState(1);
-  const whenClicked = () => {
-    setValue(`clicked: ${count}`);
-    setCount(count + 1);
-    console.log(window.location.href);
-  };
+  const [page, setPage] = React.useState(localStorage.getItem('page'));
+  if (localStorage.getItem('page') === undefined) {
+    localStorage.setItem('page', 'start');
+    setPage('start');
+  }
   return (
     <div>
-      <button onClick={() => (whenClicked())}>{value}</button>
+      {page === 'start' && <StartSession onSwitch={setPage}/>}
+      {page === 'session' && <Session onSwitch={setPage}/>}
     </div>
   );
 };
