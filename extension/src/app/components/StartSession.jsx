@@ -1,12 +1,12 @@
 import * as React from 'react';
 import styles from '../styles/StartSession.module.css';
-import { generateId, createPair, registerId } from '../../startsession.js';
+import { generateId, createPair, registerId } from '../../client.js';
 import cx from 'classnames';
 
 const StartSession = ({onSwitch}) => {  
     const [userId, setUserId] = React.useState(localStorage.getItem('userId'));
     const [error, setError] = React.useState(false);
-    const [message, setMessage] = React.useState('');
+    const [action, setAction] = React.useState('');
     const inputClassnames = cx({[styles.error]: error});
 
     const changeId = (id) => {
@@ -15,17 +15,17 @@ const StartSession = ({onSwitch}) => {
     }
     const onSubmit = () => {
         const partnerId = document.getElementById('partner-id').value;
-        createPair(userId, partnerId, setMessage);
+        createPair(userId, partnerId, setAction);
     }
 
     if (localStorage.getItem('userId') === undefined) {
         setUserId(generateId());
     } 
-    if (message === 'error') {
+    if (action === 'error') {
         setError(true);
-        setMessage('');
-    } else if (message === 'start') {
-        setMessage('');
+        setAction('');
+    } else if (action === 'start') {
+        setAction('');
         onSwitch('session');
     }
 

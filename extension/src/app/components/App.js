@@ -1,6 +1,5 @@
 import * as React from 'react';
-import StartSession from './StartSession';
-import Session from './Session';
+import { StartSession, Session} from './'
 
 const App = () => {
   const [page, setPage] = React.useState(localStorage.getItem('page'));
