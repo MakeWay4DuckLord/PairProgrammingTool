@@ -1,9 +1,9 @@
-// src/CreateSession.js
+import '../index.css';
 import React, { useState } from 'react';
 import { generate} from "random-words";
-import '../index.css';
 
 function CreateSession() {
+  const [partnerId, setPartnerId] = useState('');
   // Generate two random words and concatenate them with a "-"
   const generateRandomId = () => {
     const word1 = generate();
@@ -12,7 +12,6 @@ function CreateSession() {
   };
 
   const [userId, setUserId] = useState(generateRandomId()); // Initialize with a random ID
-  const [partnerId, setPartnerId] = useState('');
 
   return (
     <div className="container">

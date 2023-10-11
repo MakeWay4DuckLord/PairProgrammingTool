@@ -3,8 +3,21 @@
   "version": "0.1.0",
   "private": true,
   "jest": {
-    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.js$"
-  },  
+    "testEnvironment": "jsdom",
+    "moduleFileExtensions": [
+      "js",
+      "jsx"
+    ],
+    "transform": {
+      "^.+\\.(js|jsx)$": "babel-jest"
+    },
+    "moduleNameMapper": {
+      "\\.(css|scss)$": "identity-obj-proxy"
+    },
+    "testMatch": [
+      "<rootDir>/test/**/*.test.js"
+    ]
+  },
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
@@ -39,6 +52,12 @@
     ]
   },
   "devDependencies": {
-    "jest": "^27.5.1"
+    "@babel/preset-env": "^7.22.20",
+    "@babel/preset-react": "^7.22.15",
+    "@jest/globals": "^29.7.0",
+    "babel-jest": "^29.7.0",
+    "identity-obj-proxy": "^3.0.0",
+    "jest": "^27.5.1",
+    "react-test-renderer": "^18.2.0"
   }
 }
