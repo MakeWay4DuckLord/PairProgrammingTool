@@ -1,4 +1,5 @@
-package-lock.json
 web-app/node_modules
 vscode-extension/node_modules
+web-app/package-lock.json
+vscode-extension/package-lock.json
 .DS_Store
