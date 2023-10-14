@@ -7,7 +7,7 @@
 			],
 			"name": "Launch Extension",
 			"outFiles": [
-				"${workspaceFolder}/src/**/*.js"
+				"${workspaceFolder}/extension/src/**/*.js"
 			],
 			"request": "launch",
 			"type": "extensionHost",

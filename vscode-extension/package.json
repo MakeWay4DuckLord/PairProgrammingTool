@@ -33,7 +33,7 @@
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
-    "watch": "webpack serve --mode development --config ./webpack.config.js",
+    "watch": "webpack serve --mode development --config ./extension/webpack.config.js",
     "package": "webpack --mode production"
   },
   "devDependencies": {
