@@ -1,34 +1,59 @@
-import '../index.css';
-import React, { useState } from 'react';
-import { generate} from "random-words";
+import * as React from 'react';
+import styles from '../styles/StartSession.module.css';
+import { generateId, createPair, registerId } from '../client.js';
+import VideoCall from './VideoCall'
+import cx from 'classnames';
 
-function CreateSession() {
-  const [partnerId, setPartnerId] = useState('');
-  // Generate two random words and concatenate them with a "-"
-  const generateRandomId = () => {
-    const word1 = generate();
-    const word2 = generate();
-    return `${word1}-${word2}`;
-  };
+const CreateSession = () => {  
+    const [userId, setUserId] = React.useState(generateId());
+    const [partnerId, setPartnerId] = React.useState('');
+    const [paired, setPaired] = React.useState(false);
+    const [error, setError] = React.useState(false);
+    const [action, setAction] = React.useState('');
+    const inputClassnames = cx({[styles.error]: error});
 
-  const [userId, setUserId] = useState(generateRandomId()); // Initialize with a random ID
+    const stream = React.useRef();
 
-  return (
-    <div className="container">
-      <h1>Create Session</h1>
-      <p>Your User ID: {userId}</p>
-      <div className="input-container">
-        <input
-          type="text"
-          placeholder="Enter Partner's ID"
-          value={partnerId}
-          onChange={(e) => setPartnerId(e.target.value)}
-        />
-        <button>Start Session</button>
-      </div>
-    </div>
-  );
-}
+    const onSubmit = () => {
+        const partnerId = document.getElementById('partner-id').value;
+        createPair(userId, partnerId, setAction);
+    }
+
+    if (action === 'error') {
+        setError(true);
+        setAction('');
+    } else if (action === 'start') {
+        setAction('');
+        navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((str) => {
+            if (stream.current) {
+                stream.current.srcObject = str;
+            }
+            setPaired(true);
+        })
+    }
+
+    registerId(userId, setUserId, setAction, setPartnerId);
+    
+    return (
+        <>
+            {!paired && <div className={styles.container}>
+                <h1>Create New Session</h1>
+                <div className={styles.id}>
+                    <label>Your unique ID: </label>
+                    <label className={styles.userId}>{userId}</label>
+                </div>
+                <label className={styles.inputLabel}>Enter Your Partner's ID: </label>
+                <input 
+                className={inputClassnames}
+                id="partner-id" 
+                placeholder='User...' 
+                type="text"/>
+                <button id="id" onClick={onSubmit}>Start Session</button>
+                {error && <p className={styles.error}>ERROR! Please check your partner's ID and try again.</p>}
+            </div>}
+            {paired && <VideoCall userId={userId} stream={stream} partnerId={partnerId}/>}
+        </>
+    );
+};
 
 export default CreateSession;
-

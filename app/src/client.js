@@ -9,28 +9,28 @@ export const generateId = () => {
   return userId;
 }
 
-export const registerId = (id, setId, onSwitch) => {
+export const registerId = (id, setId, setAction, setPartnerId) => {
   if (!idRegistered) {
     // wait for connection to establish
     ws.onopen = () => {
       // register ID
-      ws.send(JSON.stringify({ action: "id", id: id}));
+      ws.send(JSON.stringify({ action: "id", id: userId}));
       // wait to see if ID is correctly registered
       ws.addEventListener("message", (event) => {
         // id successfully registered
         if (JSON.parse(event.data).action === 'registered') {
           idRegistered = true;
-          // add an event listener if partner connects for us
-          ws.addEventListener("message", (event) => {
-            if (JSON.parse(event.data).action === 'start') {
-              switchPage('session');
-            }
-          })
+        // hello
+        } else if (JSON.parse(event.data).action === 'hello') {
         // id already in use
-        } else {
+        } else if (!idRegistered) {
           let newId = generateId();
           setId(newId);
           registerId(newId);
+        // else, error or start
+        } else if (JSON.parse(event.data).action === 'start') {
+          setAction(JSON.parse(event.data).action);
+          setPartnerId(JSON.parse(event.data).partner)
         }
       });
     }
@@ -41,8 +41,4 @@ export const createPair = (id, partnerId, setMessage) => {
   ws.send(JSON.stringify({
     action: "pair", id1: id, id2: partnerId
   }));
-
-  ws.addEventListener("message", (event) => {
-    setMessage(JSON.parse(event.data).action);
-  })
 }

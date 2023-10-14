@@ -66,7 +66,7 @@ wss.on("connection", (ws, request) => {
           if (id in userIDs) {
             ws.send(JSON.stringify({ action: "error", reason: "Id Already Exists"}));
           } else {
-            userIDs.push(parseInt(id));
+            userIDs.push(id);
     
             ws.send(JSON.stringify({ action: "registered", serverid: id}));
           }
@@ -75,7 +75,7 @@ wss.on("connection", (ws, request) => {
         case "pair":
           console.log("Client " + message.id1 + " is trying to pair with Client " + message.id2);
 
-          let returns = pair(parseInt(message.id1), parseInt(message.id2));
+          let returns = pair(message.id1, message.id2);
     
           if (returns.worked) {
             ws.send(JSON.stringify({ 
