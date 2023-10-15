@@ -10,6 +10,7 @@ const CreateSession = () => {
     const [paired, setPaired] = React.useState(false);
     const [error, setError] = React.useState(false);
     const [action, setAction] = React.useState('');
+    const [caller, setCaller] = React.useState(false);
     const inputClassnames = cx({[styles.error]: error});
 
     const stream = React.useRef();
@@ -17,19 +18,16 @@ const CreateSession = () => {
     const onSubmit = () => {
         const partnerId = document.getElementById('partner-id').value;
         createPair(userId, partnerId, setAction);
+        setCaller(true);
     }
 
     if (action === 'error') {
+        setCaller(false);
         setError(true);
         setAction('');
     } else if (action === 'start') {
         setAction('');
-        navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((str) => {
-            if (stream.current) {
-                stream.current.srcObject = str;
-            }
-            setPaired(true);
-        })
+        setPaired(true);
     }
 
     registerId(userId, setUserId, setAction, setPartnerId);
@@ -51,7 +49,7 @@ const CreateSession = () => {
                 <button id="id" onClick={onSubmit}>Start Session</button>
                 {error && <p className={styles.error}>ERROR! Please check your partner's ID and try again.</p>}
             </div>}
-            {paired && <VideoCall userId={userId} stream={stream} partnerId={partnerId}/>}
+            {paired && <VideoCall userId={userId} stream={navigator.mediaDevices.getUserMedia({ video: true, audio: true })} partnerId={partnerId} caller={caller}/>}
         </>
     );
 };
