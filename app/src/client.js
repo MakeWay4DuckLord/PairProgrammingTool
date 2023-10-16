@@ -31,6 +31,8 @@ export const registerId = (id, setId, setAction, setPartnerId) => {
         } else if (JSON.parse(event.data).action === 'start') {
           setAction(JSON.parse(event.data).action);
           setPartnerId(JSON.parse(event.data).partner)
+        } else if (JSON.parse(event.data).action === 'error') {
+          setAction(JSON.parse(event.data).action);
         }
       });
     }

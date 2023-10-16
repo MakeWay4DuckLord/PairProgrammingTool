@@ -58,3 +58,12 @@
     font-weight: 900;
     letter-spacing: 1px;
 }
+
+.errorInput {
+    outline: 3px solid red;
+    box-shadow: 1px 1px 2px grey;
+}
+
+.hidden {
+    visibility: hidden;
+}
