@@ -21,6 +21,8 @@ const CreateSession = () => {
             navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(async (mediaStream) => {
                 setStream(mediaStream);
                 setPermissionsGranted(true);
+            }, () => {
+                
             });
         };
         getUserMedia();

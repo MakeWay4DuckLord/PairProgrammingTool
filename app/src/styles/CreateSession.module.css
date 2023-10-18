@@ -17,7 +17,7 @@
 }
 
 .container button {
-    background-color: aqua;
+    background-color: #61dafb;
     color: black;
     font-weight: 700;
     font-size: 20px;
@@ -51,7 +51,7 @@
 }
 
 .container .userId {
-    background-color: cyan;
+    background-color: #61dafb;
     color: black;
     padding: 0px 5px;
     font-size: 22px;
