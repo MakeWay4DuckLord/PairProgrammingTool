@@ -6,11 +6,14 @@ const VideoCall=({userId, partnerId, stream, caller})=> {
     const videoRef = React.useRef(null);
 
      React.useEffect( () => {
+        if (videoRef.current) {
+            videoRef.current.srcObject = stream;
+        }
         //establish connection to signalling server
         const peer = new Peer(userId, {
-            host: "sd-vm01.csc.ncsu.edu",
-            port: 443,
-            path: "/myapp"
+            // host: "localhost",
+            // port: 8080,
+            // path: "/myapp"
         });
 
         //once connection is established, log id and send a message to peer for debugging
@@ -19,17 +22,9 @@ const VideoCall=({userId, partnerId, stream, caller})=> {
             //this connection thingy is just to send messages for debugging, its not a step for setting up the call
             var conn = peer.connect(partnerId); 
             conn.on("open", () => conn.send("hello from " + id));
-        });
-
-        //stream prop is just MediaStream promise, so use '.then()' to do stuff with it once it is actually fulfilled 
-        stream.then((mediaStream) => {
-            //display your a/v stream
-            videoRef.current.srcObject = mediaStream;
-            
-            //call partner if you are the caller which wil
             if(caller){
                 //call partner
-                const outgoingCall = peer.call(partnerId, mediaStream);
+                const outgoingCall = peer.call(partnerId, stream);
                 //get their stream to display
                 outgoingCall.on('stream', (remoteStream) => {
                     partnerVideoRef.current.srcObject = remoteStream
@@ -37,12 +32,13 @@ const VideoCall=({userId, partnerId, stream, caller})=> {
             } else { //otherwise wait for a incoming call
                 peer.on("call", incomingCall => {
                     //answer with your a/v stream
-                    incomingCall.answer(mediaStream);
+                    incomingCall.answer(stream);
                     //display your partners a/v stream
                     incomingCall.on("stream", remoteStream => partnerVideoRef.current.srcObject = remoteStream);
                 });
             }
         });
+
     });
     
     return (
@@ -53,7 +49,7 @@ const VideoCall=({userId, partnerId, stream, caller})=> {
             </div>
             <label>{userId}</label>
             <div>
-                <video width={640} height={360} ref={videoRef} autoPlay/>
+                <video muted={true} width={640} height={360} ref={videoRef} autoPlay/>
             </div>
         </>
     );

@@ -7,16 +7,12 @@ import cx from 'classnames';
 const CreateSession = () => {  
     const [userId, setUserId] = React.useState(generateId());
     const [partnerId, setPartnerId] = React.useState('');
-
     const [paired, setPaired] = React.useState(false);
     const [permissionsGranted, setPermissionsGranted] = React.useState(false);
-
     const [error, setError] = React.useState(false);
     const [action, setAction] = React.useState('');
-
     const errorClassNames = cx(styles['error'], {[styles.hidden]:(!error)});
     const inputClassnames = cx({[styles.errorInput]: error});
-
     const [caller, setCaller] = React.useState(false);
     const [stream, setStream] = React.useState(null);
 
@@ -46,9 +42,7 @@ const CreateSession = () => {
         setPaired(true);
     }
 
-    if (permissionsGranted) {
-        registerId(userId, setUserId, setAction, setPartnerId);
-    }
+    registerId(userId, setUserId, setAction, setPartnerId);
     
     return (
         <>

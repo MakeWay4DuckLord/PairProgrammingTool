@@ -14,7 +14,7 @@ export const registerId = (id, setId, setAction, setPartnerId) => {
     // wait for connection to establish
     ws.onopen = () => {
       // register ID
-      ws.send(JSON.stringify({ action: "id", id: userId}));
+      ws.send(JSON.stringify({ action: "id", id: id}));
       // wait to see if ID is correctly registered
       ws.addEventListener("message", (event) => {
         // id successfully registered
