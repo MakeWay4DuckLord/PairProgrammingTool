@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StartSession, Session} from './'
+import Session from './components/Session'
 
 const App = () => {
   const [page, setPage] = React.useState(localStorage.getItem('page'));
@@ -9,7 +9,6 @@ const App = () => {
   }
   return (
     <div>
-      {page === 'start' && <StartSession onSwitch={setPage}/>}
       {page === 'session' && <Session onSwitch={setPage}/>}
     </div>
   );

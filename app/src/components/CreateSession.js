@@ -1,34 +1,78 @@
-import '../index.css';
-import React, { useState } from 'react';
-import { generate} from "random-words";
+import * as React from 'react';
+import styles from '../styles/CreateSession.module.css';
+import { generateId, createPair, registerId } from '../client.js';
+import VideoCall from './VideoCall'
+import cx from 'classnames';
 
-function CreateSession() {
-  const [partnerId, setPartnerId] = useState('');
-  // Generate two random words and concatenate them with a "-"
-  const generateRandomId = () => {
-    const word1 = generate();
-    const word2 = generate();
-    return `${word1}-${word2}`;
-  };
+const CreateSession = () => {  
+    const [userId, setUserId] = React.useState(generateId());
+    const [partnerId, setPartnerId] = React.useState('');
 
-  const [userId, setUserId] = useState(generateRandomId()); // Initialize with a random ID
+    const [paired, setPaired] = React.useState(false);
+    const [permissionsGranted, setPermissionsGranted] = React.useState(false);
 
-  return (
-    <div className="container">
-      <h1>Create Session</h1>
-      <p>Your User ID: {userId}</p>
-      <div className="input-container">
-        <input
-          type="text"
-          placeholder="Enter Partner's ID"
-          value={partnerId}
-          onChange={(e) => setPartnerId(e.target.value)}
-        />
-        <button>Start Session</button>
-      </div>
-    </div>
-  );
-}
+    const [error, setError] = React.useState(false);
+    const [action, setAction] = React.useState('');
+
+    const errorClassNames = cx(styles['error'], {[styles.hidden]:(!error)});
+    const inputClassnames = cx({[styles.errorInput]: error});
+
+    const [caller, setCaller] = React.useState(false);
+    const [stream, setStream] = React.useState(null);
+
+    React.useEffect(() => {
+        const getUserMedia = async () => {
+            navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(async (mediaStream) => {
+                setStream(mediaStream);
+                setPermissionsGranted(true);
+            });
+        };
+        getUserMedia();
+    }, []);
+
+    const onSubmit = () => {
+        const partnerId = document.getElementById('partner-id').value;
+        createPair(userId, partnerId, setAction);
+        setCaller(true);
+    }
+
+    if (action === 'error') {
+        setCaller(false);
+        setError(true);
+        setAction('');
+    } else if (action === 'start') {
+        setError(false);
+        setAction('');
+        setPaired(true);
+    }
+
+    if (permissionsGranted) {
+        registerId(userId, setUserId, setAction, setPartnerId);
+    }
+    
+    return (
+        <>
+            {!permissionsGranted && 
+                <div>Waiting for permissions...
+                </div>}
+            {permissionsGranted && !paired && <div className={styles.container}>
+                <h1>Create New Session</h1>
+                <div className={styles.id}>
+                    <label>Your unique ID: </label>
+                    <label className={styles.userId}>{userId}</label>
+                </div>
+                <label className={styles.inputLabel}>Enter Your Partner's ID: </label>
+                <input 
+                className={inputClassnames}
+                id="partner-id" 
+                placeholder='User...' 
+                type="text"/>
+                <button id="id" onClick={onSubmit}>Start Session</button>
+                <p className={errorClassNames}>ERROR! Please check your partner's ID and try again.</p>
+            </div>}
+            {permissionsGranted && paired && <VideoCall userId={userId} stream={stream} partnerId={partnerId} caller={caller}/>}
+        </>
+    );
+};
 
 export default CreateSession;
-
