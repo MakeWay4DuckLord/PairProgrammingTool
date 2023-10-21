@@ -1,7 +1,7 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 const { Schema } = mongoose;
-import { Utterance } from './Utterance'
-import { Report } from './Report'
+const Utterance = require('./Utterance');
+const Report = require('./Report');
 
 const userSchema = new Schema({
     user_id: String,
