@@ -1,6 +1,6 @@
 import WebSocket from 'isomorphic-ws';
 
-export const ws = new WebSocket('ws://localhost:8080');
+export const ws = new WebSocket('ws://localhost:80');
 var userId;
 var idRegistered = false;
 

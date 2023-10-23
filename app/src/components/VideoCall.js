@@ -22,7 +22,7 @@ const VideoCall=({userId, partnerId, stream, caller})=> {
         const peer = new Peer(userId, {
             host: 'localhost',
             port: 80,
-            path: "/app"
+            path: "/myapp"
         });
 
         //once connection is established, log id and send a message to peer for debugging
