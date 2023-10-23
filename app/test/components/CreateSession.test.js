@@ -11,7 +11,6 @@ configure({adapter: new Adapter()});
 /**
  * Preconditions for testing: WebSocket server must be running
 */
-
 describe('CreateSession', () => {
   test('renders with the ID User1000', () => {
     const {getByText } = render(<CreateSession userId={'User1000'} />);
@@ -19,8 +18,15 @@ describe('CreateSession', () => {
   });
 
   test('renders with one input field', () => {
-    const createSession = shallow(<CreateSession userId={'User1000'} />);
+    const createSession = shallow(<CreateSession userId={'User1000'} onSubmit={() => color = blue} />);
     expect(createSession.find('input').length).toBe(1);
+  });
+
+  test('onSubmit works on click', () => {
+    var color = 'blue';
+    const createSession = shallow(<CreateSession userId={'User1000'} onSubmit={() => color = 'red'} />);
+    createSession.find('button').simulate('click');
+    expect(color).toEqual('red');
   });
 });
 
