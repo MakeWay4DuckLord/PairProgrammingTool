@@ -21,7 +21,7 @@ const VideoCall=({userId, partnerId, stream, caller})=> {
         //establish connection to signalling server
         const peer = new Peer(userId, {
             host: 'localhost',
-            port: 80,
+            port: 443,
             path: "/myapp"
         });
 

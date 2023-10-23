@@ -1,0 +1,11 @@
+services:
+   server:
+      build: ./
+      restart: unless-stopped
+      ports:
+         - "80:80"
+   peer:
+      build: ./peer
+      restart: unless-stopped
+      ports:
+         - "443:443"
