@@ -65,7 +65,7 @@ const VideoCall=({userId, partnerId, stream, caller})=> {
     
     return (
         <>
-            <div className={styles.videoContainer}>
+            <div className={styles.videoContainer} data-testid="video-call">
                 <video width={640} height={360} ref={partnerVideoRef} autoPlay/>
             </div>
             <div className={cx({[styles.hideCamera]:hideVideo}, styles.videoContainer)}>
