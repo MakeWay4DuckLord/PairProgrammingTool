@@ -16,7 +16,7 @@ const { PeerServer } = require('peer');
 // });
 const wss = new webSocketServer ( { noServer: true });
 
-const server = app.listen(443, 'sd-vm01.csc.ncsu.edu');
+const server = app.listen(80, 'localhost');
 
 server.on('upgrade', (request, socket, head) => {
   wss.handleUpgrade(request, socket, head, socket => {
