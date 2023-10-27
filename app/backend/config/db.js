@@ -1,5 +1,4 @@
 const config = require('../config')
-const Report = require('../models/Report');
 const mongoose = require('mongoose');
 
 const connectToMongoDB = async () => {
