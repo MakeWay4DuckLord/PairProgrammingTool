@@ -67,7 +67,7 @@ router.post("/reports", async (req, res) => {
         await report.save();
         res.send(report);
     } catch(err) {
-        res.send("Failed to insert Utterance " + err);
+        res.status(500).send("Failed to insert Utterance " + err);
     }  
 });
 
@@ -80,9 +80,9 @@ router.get("/sessions/:userId", async (req, res) => {
     } catch(err) {
         try {
             const session = await Session.findOne({user2_id: userId });
-            res.send(session.user1_id);
+            res.status.send(session.user1_id);
         } catch(err) {
-            res.send("User Id has not been registered " + err);
+            res.status(500).send("User Id has not been registered " + err);
         }
     }
 });
@@ -94,7 +94,7 @@ router.get("/utterances/:userId", async (req, res) => {
         const utterance = await Utterance.findOne({user_id: userId }).sort({_id: -1});
         res.send(utterance);
     } catch(err) {
-        res.send("No utterances exist for user " + userId);
+        res.status(500).send("No utterances exist for user " + userId);
     }
 });
 
@@ -105,7 +105,7 @@ router.get("/reports/:userId", async (req, res) => {
         const report = await Report.findOne({user_id: userId }).sort({_id: -1});
         res.send(report);
     } catch(err) {
-        res.send("Report does not exist");
+        res.status(500).send("Report does not exist");
     }
 });
 
@@ -116,7 +116,7 @@ router.delete("/utterances", async (req, res) => {
         await Utterance.deleteMany({});
         res.send("Successfully deleted all utterances");
     } catch(err) {
-        res.send("Failed to delete utterances");
+        res.status(500).send("Failed to delete utterances");
     }
 });
 
