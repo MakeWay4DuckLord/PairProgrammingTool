@@ -1,9 +1,24 @@
-import WebSocket, { WebSocketServer } from 'ws';
+const webSocketServer = require('ws').Server;
+// import express from 'express';
+const express =  require('express');
+const app = express();
 
-const wss = new WebSocketServer({
-  port: 8080,
-  // host: "127.0.0.0",
-})
+// const peerServer = PeerServer({ port: 443 });
+
+// const wss = new WebSocketServer({
+//   port: 443,
+//   host: "sd-vm01.csc.ncsu.edu"
+// });
+const wss = new webSocketServer ( { 
+  host: "0.0.0.0",
+  port: 80,
+} );
+
+// const peerServer = PeerServer({ 
+//   server, path: "/myapp"
+// });
+
+// app.use("/peerjs", peerServer);
 
 // Maps user ids to their generated UIDs
 // let userIDs = {};
@@ -14,6 +29,9 @@ var pairings = {};
 
 // Maps users to their connection information once they contact the server
 var connections = {};
+
+// Maps users's ids to their Peer connections for WebRTC
+var peers = {};
 
 
 function pair(uid1, uid2) {
@@ -59,14 +77,12 @@ wss.on("connection", (ws, request) => {
           let id = message.id;
           if (connections[id] === undefined) {
             connections[id] = [ws];
-          } else {
-            connections.push(ws);
           }
           
           if (id in userIDs) {
             ws.send(JSON.stringify({ action: "error", reason: "Id Already Exists"}));
           } else {
-            userIDs.push(parseInt(id));
+            userIDs.push((id));
     
             ws.send(JSON.stringify({ action: "registered", serverid: id}));
           }
@@ -75,7 +91,7 @@ wss.on("connection", (ws, request) => {
         case "pair":
           console.log("Client " + message.id1 + " is trying to pair with Client " + message.id2);
 
-          let returns = pair(parseInt(message.id1), parseInt(message.id2));
+          let returns = pair((message.id1), (message.id2));
     
           if (returns.worked) {
             ws.send(JSON.stringify({ 

@@ -1,7 +1,6 @@
-app/node_modules
-vscode-extension/node_modules
-app/package-lock.json
-vscode-extension/package-lock.json
-node_modules
-.DS_Store
+**/node_modules
+**/package-lock.json
+*.log
+*.gz
+*/coverage/*
 .env

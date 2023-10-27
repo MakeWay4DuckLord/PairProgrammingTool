@@ -1,33 +1,32 @@
 // src/CreateSession.test.js
 import {React} from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import CreateSession from '../../src/components/CreateSession';
-import '@testing-library/jest-dom'
+import '@testing-library/jest-dom';
+import { shallow, configure } from 'enzyme';
+import Adapter from '@cfaester/enzyme-adapter-react-18';
 
-// Mock the random-words generate function 
-// for some reason the test fails if you take this out 
-jest.mock('random-words', () => ({
-  generate: jest.fn(() => 'mocked-word'),
-}));
+configure({adapter: new Adapter()});
 
-
+/**
+ * Preconditions for testing: WebSocket server must be running
+*/
 describe('CreateSession', () => {
-  test('renders with a default user ID and input field', () => {
-    const {getByText } = render(<CreateSession />);
-    
-    expect(getByText('Create Session')).toBeInTheDocument();
+  test('renders with the ID User1000', () => {
+    const {getByText } = render(<CreateSession userId={'User1000'} />);
+    expect(getByText('User1000')).toBeInTheDocument();
   });
 
-  test('updates partnerId when typing in the input field', () => {
-    const {getByPlaceholderText } = render(<CreateSession />);
+  test('renders with one input field', () => {
+    const createSession = shallow(<CreateSession userId={'User1000'} onSubmit={() => color = blue} />);
+    expect(createSession.find('input').length).toBe(1);
+  });
 
-    // Find the input field
-    const inputField = getByPlaceholderText("Enter Partner's ID");
-
-    // Type some text into the input field
-    fireEvent.change(inputField, { target: { value: 'partner123' } });
-
-    // Check if the input field value has been updated
-    expect(inputField).toHaveValue('partner123');
+  test('onSubmit works on click', () => {
+    var color = 'blue';
+    const createSession = shallow(<CreateSession userId={'User1000'} onSubmit={() => color = 'red'} />);
+    createSession.find('button').simulate('click');
+    expect(color).toEqual('red');
   });
 });
+

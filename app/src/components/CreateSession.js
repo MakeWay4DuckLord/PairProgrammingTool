@@ -1,34 +1,27 @@
-import '../index.css';
-import React, { useState } from 'react';
-import { generate} from "random-words";
+import * as React from 'react';
+import styles from '../styles/CreateSession.module.css';
+import cx from 'classnames';
 
-function CreateSession() {
-  const [partnerId, setPartnerId] = useState('');
-  // Generate two random words and concatenate them with a "-"
-  const generateRandomId = () => {
-    const word1 = generate();
-    const word2 = generate();
-    return `${word1}-${word2}`;
-  };
-
-  const [userId, setUserId] = useState(generateRandomId()); // Initialize with a random ID
-
-  return (
-    <div className="container">
-      <h1>Create Session</h1>
-      <p>Your User ID: {userId}</p>
-      <div className="input-container">
-        <input
-          type="text"
-          placeholder="Enter Partner's ID"
-          value={partnerId}
-          onChange={(e) => setPartnerId(e.target.value)}
-        />
-        <button>Start Session</button>
-      </div>
-    </div>
-  );
-}
+const CreateSession = ({onSubmit, error, userId}) => {  
+    const errorClassNames = cx(styles['error'], {[styles.hidden]:(!error)});
+    const inputClassnames = cx({[styles.errorInput]: error});
+    return (
+        <div className={styles.container}>
+            <h1>Create New Session</h1>
+            <div className={styles.id}>
+                <label>Your unique ID: </label>
+                <label data-testid="id" className={styles.userId}>{userId}</label>
+            </div>
+            <label className={styles.inputLabel}>Enter Your Partner's ID: </label>
+            <input 
+            className={inputClassnames}
+            id="partner-id" 
+            placeholder='User...' 
+            type="text"/>
+            <button id="id" onClick={onSubmit}>Start Session</button>
+            <p className={errorClassNames}>ERROR! Please check your partner's ID and try again.</p>
+        </div>
+    );
+};
 
 export default CreateSession;
-

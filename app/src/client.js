@@ -1,6 +1,6 @@
 import WebSocket from 'isomorphic-ws';
 
-export const ws = new WebSocket('ws://localhost:8080');
+export const ws = new WebSocket('ws://sd-vm01.csc.ncsu.edu');
 var userId;
 var idRegistered = false;
 
@@ -9,7 +9,7 @@ export const generateId = () => {
   return userId;
 }
 
-export const registerId = (id, setId, onSwitch) => {
+export const registerId = (id, setId, setAction, setPartnerId) => {
   if (!idRegistered) {
     // wait for connection to establish
     ws.onopen = () => {
@@ -20,17 +20,19 @@ export const registerId = (id, setId, onSwitch) => {
         // id successfully registered
         if (JSON.parse(event.data).action === 'registered') {
           idRegistered = true;
-          // add an event listener if partner connects for us
-          ws.addEventListener("message", (event) => {
-            if (JSON.parse(event.data).action === 'start') {
-              switchPage('session');
-            }
-          })
+        // hello
+        } else if (JSON.parse(event.data).action === 'hello') {
         // id already in use
-        } else {
+        } else if (!idRegistered) {
           let newId = generateId();
           setId(newId);
           registerId(newId);
+        // else, error or start
+        } else if (JSON.parse(event.data).action === 'start') {
+          setAction(JSON.parse(event.data).action);
+          setPartnerId(JSON.parse(event.data).partner)
+        } else if (JSON.parse(event.data).action === 'error') {
+          setAction(JSON.parse(event.data).action);
         }
       });
     }
@@ -41,8 +43,4 @@ export const createPair = (id, partnerId, setMessage) => {
   ws.send(JSON.stringify({
     action: "pair", id1: id, id2: partnerId
   }));
-
-  ws.addEventListener("message", (event) => {
-    setMessage(JSON.parse(event.data).action);
-  })
 }
