@@ -9,5 +9,5 @@ const apiRoutes = require('./routes/api');
 app.use('/api', apiRoutes);
 
 app.listen(5000, () => {
-  console.log('Server is running on port 3001');
+  console.log('Server is running on port 5000');
 });
