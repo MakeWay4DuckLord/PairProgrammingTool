@@ -1,6 +1,6 @@
+**/node_modules
 **/package-lock.json
-.DS_*
-node_modules
 *.log
 *.gz
 */coverage/*
+.env
