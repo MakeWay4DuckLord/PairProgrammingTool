@@ -17,6 +17,44 @@ const VideoCall=({userId, partnerId, stream, caller})=> {
     const [socket, setSocket] = React.useState(null);
 
     const [sentStream] = React.useState(stream.clone());
+    // const [audioStream] = React.useState(stream.clone());
+
+    function getMicrophone() {
+        const audioStream = stream.clone();
+        audioStream.removeTrack(audioStream.getVideoTracks()[0]);
+        return new MediaRecorder(audioStream);
+    }
+
+    async function openMicrophone(microphone, socket) {
+        await microphone.start(500);
+      
+        // microphone.onstart = () => {
+        //   console.log("client: microphone opened");
+        //   document.body.classList.add("recording");
+        // };
+      
+        // microphone.onstop = () => {
+        //   console.log("client: microphone closed");
+        //   document.body.classList.remove("recording");
+        // };
+      
+        microphone.ondataavailable = (e) => {
+          console.log("client: sent data to websocket");
+          socket.send(e.data);
+        };
+      }
+
+      async function start(socket){
+        let microphone;
+        if (!microphone) {
+            // open and close the microphone
+            microphone = await getMicrophone();
+            await openMicrophone(microphone, socket);
+          } else {
+            await microphone.stop(); //might need to move to async function closeMicrophone()
+            microphone = undefined;
+          }
+      }
 
 
 
@@ -57,6 +95,7 @@ const VideoCall=({userId, partnerId, stream, caller})=> {
 
         
         const ws = new WebSocket('ws://localhost:42069');
+        // const ws = new WebSocket('wss://api.deepgram.com/v1/listen');
 
         ws.onopen = () => {
             console.log('WebSocket connection established.');
@@ -72,8 +111,11 @@ const VideoCall=({userId, partnerId, stream, caller})=> {
 
         setSocket(ws);
 
+        start(ws);
+
         // Clean up the WebSocket connection when the component unmounts
         return () => {
+            ws.send({ 'type': 'CloseStream' });
             if (socket) {
                 socket.close();
             }
