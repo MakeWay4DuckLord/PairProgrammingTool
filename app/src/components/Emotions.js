@@ -1,13 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Data from './Data';
+import emotions from './Constants';
 
 const API_KEY = `545WFZ9GWUaMHHffmHZuBlqW5AtwsBFnpdPEUKjnTF86GWsV`; // Replace with your actual API key
 const endpoint = 'wss://api.hume.ai/v0/stream/models';
 
+const score_interval = 300000 // calculate score every five minute
+const emotion_interval = 500 // get an emotion response every half second 
+
 const Emotions = ({ videoStream }) => {
   const [emotion, setEmotion] = useState('');
   const [socket, setSocket] = useState(null);
-
+  const [score, setScore] = useState(0);
+  const [numOfRequests, setNumOfRequests] = useState(0)
   const videoRef = useRef(null);
 
   useEffect(() => {
@@ -81,8 +86,22 @@ const Emotions = ({ videoStream }) => {
           }
         }
       };
+
     }
   }, [socket]);
+
+  useEffect(() => {
+    setNumOfRequests(numOfRequests + 1)
+    var tempScore = emotions[emotion];
+    setScore((score + tempScore) / numOfRequests);
+    if (numOfRequests === (score_interval / emotion_interval)){
+      // make endpoint request
+      setScore(0);
+    }
+    console.log(score)
+
+
+  }, [emotion])
 
   useEffect(() => {
     if (videoRef.current) {

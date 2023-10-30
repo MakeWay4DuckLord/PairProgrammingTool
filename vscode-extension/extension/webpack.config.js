@@ -5,12 +5,15 @@
 // used for joining directory with src path
 const path = require('path');
 
+
+
 // export a configuration for the index.jsx file on the web server
 module.exports = [
   {
     name: 'webpack',
     mode: "development",
     entry: './extension/src/app/index.js',
+    target: 'web',
     output: {
       // name of the script used in the webview panel
       filename: 'index.js',
@@ -20,6 +23,9 @@ module.exports = [
     resolve: {
       // look for js first then jsx if searching for a specific filename
       extensions: ['.js', '.jsx'],
+      fallback: {
+        "os": false
+      }
     },
     module: {
       rules: [
