@@ -1,24 +1,32 @@
-const webSocketServer = require('ws').Server;
-// import express from 'express';
-const express =  require('express');
+import WebSocket, { WebSocketServer } from 'ws';
+import express from 'express';
+
+
 const app = express();
 
-// const peerServer = PeerServer({ port: 443 });
 
-// const wss = new WebSocketServer({
-//   port: 443,
-//   host: "sd-vm01.csc.ncsu.edu"
-// });
-const wss = new webSocketServer ( { 
-  host: "0.0.0.0",
-  port: 80,
-} );
+import { PeerServer } from 'peerjs';
 
-// const peerServer = PeerServer({ 
-//   server, path: "/myapp"
-// });
+const wss = new WebSocketServer ( { noServer: true  });
 
-// app.use("/peerjs", peerServer);
+const server = app.listen(80);
+
+server.on('upgrade', (request, socket, head) => {
+  wss.handleUpgrade(request, socket, head, socket => {
+    wss.emit('connection', socket, request);
+  })
+})
+
+const peerServer = PeerServer({ 
+  server, path: "/myapp"
+});
+
+app.use("/peerjs", peerServer);
+
+
+
+
+
 
 // Maps user ids to their generated UIDs
 // let userIDs = {};
@@ -58,8 +66,6 @@ function pair(uid1, uid2) {
   return { 'worked': validPair, 'message': msg };
 }
 
-
-
 wss.on("connection", (ws, request) => {
   console.log(`Connection from ${request.socket.remoteAddress}`);
   // var address = request.socket.remoteAddress;
@@ -82,7 +88,7 @@ wss.on("connection", (ws, request) => {
           if (id in userIDs) {
             ws.send(JSON.stringify({ action: "error", reason: "Id Already Exists"}));
           } else {
-            userIDs.push((id));
+            userIDs.push(parseInt(id));
     
             ws.send(JSON.stringify({ action: "registered", serverid: id}));
           }
@@ -91,7 +97,7 @@ wss.on("connection", (ws, request) => {
         case "pair":
           console.log("Client " + message.id1 + " is trying to pair with Client " + message.id2);
 
-          let returns = pair((message.id1), (message.id2));
+          let returns = pair(parseInt(message.id1), parseInt(message.id2));
     
           if (returns.worked) {
             ws.send(JSON.stringify({ 
@@ -136,3 +142,8 @@ wss.on("connection", (ws, request) => {
     }
   })
 })
+
+peerServer.on("connection", (client) => {
+  console.log("someone has connected");
+})
+
