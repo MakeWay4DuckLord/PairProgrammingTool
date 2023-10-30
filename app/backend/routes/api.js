@@ -121,3 +121,18 @@ router.delete("/utterances", async (req, res) => {
 });
 
 module.exports = router;
+
+//Adds an expression score to the array of scores a user has
+//This is updated every 5 minutes
+router.put("/users/:userId/expressionScore", async (req, res) => {
+    const userId = req.params.userId;
+    const newScore = req.body.newScore;
+    try {
+        await User.updateOne(
+            { user_id: userId },
+            { $push: { expression_scores: newScore } });
+        res.send(`Successfully updated ${userId}'s expression score`);
+    } catch(err) {
+        res.status(500).send(`Failed to update ${userId}'s expression score`);
+    }
+});
