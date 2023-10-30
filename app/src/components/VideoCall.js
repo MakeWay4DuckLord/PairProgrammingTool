@@ -4,6 +4,7 @@ import Peer from 'peerjs';
 import { faVolumeUp, faVolumeMute, faVideoCamera, faVideoSlash } from '@fortawesome/free-solid-svg-icons';
 import styles from '../styles/VideoCall.module.css';
 import cx from 'classnames';
+import Emotions from './Emotions';
 
 const VideoCall=({userId, partnerId, stream, caller})=> {  
     const partnerVideoRef = React.useRef(null);
@@ -75,6 +76,7 @@ const VideoCall=({userId, partnerId, stream, caller})=> {
                     <button onClick={onHide}>Hide</button>
                 </div>
                 <video muted={true} width={640} height={360} ref={videoRef} autoPlay/>
+                <Emotions muted={true} videoStream={sentStream} />
             </div>
         </>
     );
