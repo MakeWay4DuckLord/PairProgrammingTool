@@ -68,7 +68,6 @@ const setupDeepgram = () => {
                 if(data.speech_final) {    
                     //send utterance to database (for now log it)
                     currentUtterance.end_time = words[words.length-1].end;
-                    console.log("ok this should be an utterence:");
                     console.log(currentUtterance);
                     //reset the utterence variable
                     currentUtterance = {
@@ -78,9 +77,8 @@ const setupDeepgram = () => {
                 }
             }
 
-            // console.log(transcript); //will change to be sending stuff to database using the schemas sam made
-            console.log(data.speech_final)
-            console.log(transcript)
+            // console.log(data.speech_final)
+            // console.log(transcript)
 
             break;
           case "Metadata":
