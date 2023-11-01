@@ -1,13 +1,14 @@
-import WebSocket, { WebSocketServer } from 'ws';
-import express from 'express';
-
+const express = require("express");
+const { WebSocketServer } = require("ws");
 
 const app = express();
 
+//import pkg from 'peer';
+// const { ExpressPeerServer } = require("peer").ExpressPeerServer;
+const { ExpressPeerServer } = require("peer");
+// import { ExpressPeerServer } from 'peer';
 
-import { PeerServer } from 'peerjs';
-
-const wss = new WebSocketServer ( { noServer: true  });
+const wss = new WebSocketServer ( { noServer: true, path: "/ws"  });
 
 const server = app.listen(80);
 
@@ -17,8 +18,8 @@ server.on('upgrade', (request, socket, head) => {
   })
 })
 
-const peerServer = PeerServer({ 
-  server, path: "/myapp"
+const peerServer = ExpressPeerServer( server, {
+  path: "/myapp" , debug: true
 });
 
 app.use("/peerjs", peerServer);
@@ -46,17 +47,13 @@ function pair(uid1, uid2) {
 
   let validPair = true;
   let msg = "";
-  if (!uid1 || !uid2) {
-    msg = "One or both partners does not exist";
-    console.log(msg);
-    validPair = false;
-  } else if (uid1 in pairings || uid2 in pairings) {
+  if (uid1 in pairings || uid2 in pairings) {
     msg = "One or both partners is already paired.";
-    console.log(msg);
+    console.log("WS: " + msg);
     validPair = false;
   } else if (!(userIDs.includes(uid1)) || !(userIDs.includes(uid2))) {
     msg = "One or both partners has not registered yet.";
-    console.log(msg);
+    console.log("WS: " + msg);
     validPair = false;
   } else {
     msg = "success";
@@ -67,7 +64,7 @@ function pair(uid1, uid2) {
 }
 
 wss.on("connection", (ws, request) => {
-  console.log(`Connection from ${request.socket.remoteAddress}`);
+  console.log(`WS: Connection from ${request.socket.remoteAddress}`);
   // var address = request.socket.remoteAddress;
   
   ws.send(JSON.stringify({action: "hello"}));
@@ -75,7 +72,7 @@ wss.on("connection", (ws, request) => {
   ws.on("message", async (data) => {
     try {
       const message = JSON.parse(data.toString("utf-8"));
-      console.log(message);
+      console.log("WS: " + message);
 
 
       switch (message.action) {
@@ -95,7 +92,7 @@ wss.on("connection", (ws, request) => {
     
           break;
         case "pair":
-          console.log("Client " + message.id1 + " is trying to pair with Client " + message.id2);
+          console.log("WS: Client " + message.id1 + " is trying to pair with Client " + message.id2);
 
           let returns = pair(message.id1, message.id2);
     
@@ -135,15 +132,17 @@ wss.on("connection", (ws, request) => {
           delete pairings[message.id];
           break;
         default:
-          console.log("idk man");
+          console.log("WS: idk man");
       }
     } catch (e) {
-      console.log(e);
+      console.log("WS: " + e);
     }
   })
 })
 
-peerServer.on("connection", (client) => {
-  console.log("someone has connected");
-})
+
+
+
+
+
 
