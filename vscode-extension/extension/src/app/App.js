@@ -9,7 +9,7 @@ const App = () => {
   }
   return (
     <div>
-      {page === 'session' && <Session onSwitch={setPage}/>}
+      <Session onSwitch={setPage}/>
     </div>
   );
 };

@@ -1,0 +1,7 @@
+.piChart div {
+    left: -5%;
+}
+
+.piChart rect {
+    fill: transparent;
+}
