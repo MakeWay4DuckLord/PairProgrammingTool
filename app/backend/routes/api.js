@@ -11,7 +11,20 @@ router.post("/sessions/:user1_id/:user2_id", async (req, res) => {
         user1_id: req.params.user1_id,
         user2_id: req.params.user2_id
     });
+
     try {
+
+        //check if a session already exists with these users
+        const sessionUserOne1 = await Session.findOne({user1_id: user1_id });
+        const sessionUserOne2 = await Session.findOne({user2_id: user1_id });
+        const sessionUserTwo1 = await Session.findOne({user1_id: user2_id });
+        const sessionUserTwo2 = await Session.findOne({user2_id: user2_id });
+
+        if(sessionUserOne1 || sessionUserOne2 || sessionUserTwo1 || sessionUserTwo2) {
+            res.status(500).send("User id has already been registered");
+        }
+
+
         await session.save();
         res.send(session);
     } catch(err) {
