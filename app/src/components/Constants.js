@@ -49,4 +49,14 @@ const emotions = {
     Triumph: 1
   };
 
+  // const emotionsCategory = {
+  //   Anger,
+  //   Disgust,
+  //   Fear,
+  //   Happiness,
+  //   Saddness,
+  //   Surprise,
+  //   Anxiety
+  // };
+
 export default emotions;

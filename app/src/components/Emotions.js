@@ -1,22 +1,21 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Data from './Data';
 import emotions from './Constants';
+import axios from 'axios';
 
 const API_KEY = `545WFZ9GWUaMHHffmHZuBlqW5AtwsBFnpdPEUKjnTF86GWsV`; // Replace with your actual API key
 const endpoint = 'wss://api.hume.ai/v0/stream/models';
 
-const score_interval = 300000 // calculate score every five minute
+const score_interval = 50000 // calculate score every five minute (300000)
 const emotion_interval = 500 // get an emotion response every half second 
 
-const Emotions = ({ videoStream }) => {
+const Emotions = ({ videoStream, id }) => {
   const [emotion, setEmotion] = useState('');
   const [socket, setSocket] = useState(null);
-  const [score, setScore] = useState(0);
   const [numOfRequests, setNumOfRequests] = useState(0)
   const videoRef = useRef(null);
 
   useEffect(() => {
-    // Create a new WebSocket connection when the component mounts
+    // Create a new WebSocket connectisetNumOfRequests(0);on when the component mounts
     const newSocket = new WebSocket(`${endpoint}?apiKey=${encodeURIComponent(API_KEY)}`);
     setSocket(newSocket);
 
@@ -54,7 +53,7 @@ const Emotions = ({ videoStream }) => {
 
       video.addEventListener('play', () => {
         // Start capturing and sending frames when the video starts playing
-        const captureInterval = setInterval(captureAndSendFrame, 5000); // Adjust the capture interval as needed
+        const captureInterval = setInterval(captureAndSendFrame, emotion_interval); // Adjust the capture interval as needed
         video.addEventListener('pause', () => {
           // Stop capturing frames when the video pauses or is no longer visible
           clearInterval(captureInterval);
@@ -72,10 +71,10 @@ const Emotions = ({ videoStream }) => {
       socket.onmessage = (event) => {
         const receivedMessage = JSON.parse(event.data);
         var emotionsArray = []
-        if (receivedMessage !== null && receivedMessage.face.predictions.length !== 0){
+        if (receivedMessage !== null && receivedMessage.face.predictions !== null && receivedMessage.face.predictions.length !== 0 ){
           emotionsArray = receivedMessage.face.predictions[0].emotions;
           console.log(emotionsArray)
-          if (emotionsArray.length !== 0) {
+          if (emotionsArray !== null && emotionsArray.length !== 0) {
             let maxEmotion = emotionsArray[0];
             for (let i = 1; i < emotionsArray.length; i++) {
               if (emotionsArray[i].score > maxEmotion.score) {
@@ -83,6 +82,7 @@ const Emotions = ({ videoStream }) => {
               }
             }
             setEmotion(maxEmotion.name)
+            setNumOfRequests(numOfRequests + 1);
           }
         }
       };
@@ -91,17 +91,20 @@ const Emotions = ({ videoStream }) => {
   }, [socket]);
 
   useEffect(() => {
-    setNumOfRequests(numOfRequests + 1)
+    var score = 0;
     var tempScore = emotions[emotion];
-    setScore((score + tempScore) / numOfRequests);
-    if (numOfRequests === (score_interval / emotion_interval)){
-      // make endpoint request
-      setScore(0);
+    if (tempScore !== undefined && tempScore !== null && score !== NaN ) {
+      // setNumOfRequests(numOfRequests + 1)
+      var newScore = ((score + tempScore)/ numOfRequests);
+      score = newScore;
     }
-    console.log(score)
+    if (numOfRequests >= (score_interval / emotion_interval)){
+      axios.put(`sd-vm01.csc.ncsu.edu/users/${id}/expressionScore/${score}`)
+      score = 0;
+      setNumOfRequests(0);
+    }
 
-
-  }, [emotion])
+  }, [emotion, numOfRequests])
 
   useEffect(() => {
     if (videoRef.current) {
@@ -112,7 +115,9 @@ const Emotions = ({ videoStream }) => {
   return (
     <div>
       <video ref={videoRef} width={640} height={360} autoPlay />
-      <Data emotion={emotion}></Data>
+      <div>
+        <p>{emotion}</p>
+      </div>
     </div>
   );
 };

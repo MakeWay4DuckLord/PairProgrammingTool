@@ -5,6 +5,7 @@ import { faVolumeUp, faVolumeMute, faVideoCamera, faVideoSlash } from '@fortawes
 import styles from '../styles/VideoCall.module.css';
 import cx from 'classnames';
 import Emotions from './Emotions';
+import axios from 'axios';
 
 const VideoCall=({userId, partnerId, stream, caller})=> {  
     const partnerVideoRef = React.useRef(null);
@@ -12,19 +13,23 @@ const VideoCall=({userId, partnerId, stream, caller})=> {
     const [muted, setMuted] = React.useState(false);
     const [videoOn, setVideoOn] = React.useState(true);
     const [hideVideo, setHideVideo] = React.useState(false);
-
     const [sentStream] = React.useState(stream.clone());
+
+    var id = null;
 
      React.useEffect( () => {
         if (videoRef.current) {
             videoRef.current.srcObject = sentStream;
         }
         //establish connection to signalling server
-        const peer = new Peer(userId, {
-            host: 'sd-vm01.csc.ncsu.edu',
-            port: 443,
-            path: "/myapp"
-        });
+        // const peer = new Peer(userId, {
+        //     // host: 'sd-vm01.csc.ncsu.edu',
+        //     host: 'localhost',
+        //     port: 443,
+        //     path: "/myapp"
+        // });
+
+        const peer = new Peer(userId, {});
 
         //once connection is established, log id and send a message to peer for debugging
         peer.on("open", id => {
@@ -47,6 +52,9 @@ const VideoCall=({userId, partnerId, stream, caller})=> {
                     incomingCall.on("stream", remoteStream => partnerVideoRef.current.srcObject = remoteStream);
                 });
             }
+            // add the user into the database
+            axios.put(`sd-vm01.csc.ncsu.edu/....`)
+            id = id;
         });
     });
 
@@ -75,8 +83,8 @@ const VideoCall=({userId, partnerId, stream, caller})=> {
                     <button onClick={onVideoChange}>{videoOn ? <FontAwesomeIcon icon={faVideoCamera}/> : <FontAwesomeIcon icon={faVideoSlash}/>}</button>
                     <button onClick={onHide}>Hide</button>
                 </div>
-                <video muted={true} width={640} height={360} ref={videoRef} autoPlay/>
-                <Emotions muted={true} videoStream={sentStream} />
+                {/* <video muted={true} width={640} height={360} ref={videoRef} autoPlay/> */}
+                <Emotions muted={true} videoStream={sentStream} id={id} />
             </div>
         </>
     );
