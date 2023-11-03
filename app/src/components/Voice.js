@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+
 const Voice = ({userId, stream})=> {  
     //message is just for debugging the websocket
     const [message, setMessage] = React.useState('');
@@ -23,6 +24,16 @@ const Voice = ({userId, stream})=> {
       }
 
       async function start(socket){
+
+        // while(socket.readyState === 0) {
+        //     // //wait for socket to be open
+        //     // if(socket.readyState >= 2) {
+        //     //     break;
+        //     // }
+        // }
+
+        // socket.send({user_id: userId});
+
         let microphone;
         if (!microphone) {
             // open and close the microphone
@@ -38,9 +49,11 @@ const Voice = ({userId, stream})=> {
 
      React.useEffect( () => {        
         const ws = new WebSocket('ws://localhost:42069');
+        // const ws = io('ws//localhost:42069');
 
         ws.onopen = () => {
             console.log('WebSocket connection established.');
+            ws.send(userId);
 
             //TODO send a message to tell transcription.js the user id
         };
