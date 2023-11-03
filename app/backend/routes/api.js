@@ -6,23 +6,23 @@ const Utterance = require("../models/Utterance");
 const Report = require("../models/Report");
 
 // Insert a Session
-router.post("/sessions", async (req, res) => {
+router.post("/sessions/:user1_id/:user2_id", async (req, res) => {
     const session = new Session({
-        user1_id: req.body.user1,
-        user2_id: req.body.user2
+        user1_id: req.params.user1_id,
+        user2_id: req.params.user2_id
     });
     try {
         await session.save();
         res.send(session);
     } catch(err) {
-        res.status(500).send("Failed to insert Session " + err);
+        res.status(500).send("Failed to insert Session");
     }
 });
 
 // Insert a new User
-router.post("/users", async (req, res) => {
+router.post("/users/:userId", async (req, res) => {
     const user = new User({
-        user_id: "User1",
+        user_id: req.params.userId,
         lines_of_code: 0,
         num_role_changes: 0,
         expression_scores: [0],
@@ -33,7 +33,7 @@ router.post("/users", async (req, res) => {
         await user.save();
         res.send(user);
     } catch(err) {
-        res.status(500).end("Failed to insert User " + err);
+        res.status(500).end("Failed to insert User");
     }
 });
 
@@ -41,7 +41,6 @@ router.post("/users", async (req, res) => {
 router.post("/utterances", async (req, res) => {
     const utterance = new Utterance({
         user_id: req.body.userId,
-        is_navigator: req.body.isNavigator,
         start_time: req.body.startTime,  
         end_time: req.body.endTime,
         transcript: req.body.transcript  
@@ -50,7 +49,7 @@ router.post("/utterances", async (req, res) => {
         await utterance.save();
         res.send(utterance);
     } catch(err) {
-        res.status(500).send("Failed to insert Utterance " + err);
+        res.status(500).send("Failed to insert Utterance");
     }  
 });
 
@@ -67,7 +66,7 @@ router.post("/reports", async (req, res) => {
         await report.save();
         res.send(report);
     } catch(err) {
-        res.status(500).send("Failed to insert Utterance " + err);
+        res.status(500).send("Failed to insert Report");
     }  
 });
 
@@ -76,14 +75,19 @@ router.get("/sessions/:userId", async (req, res) => {
     const userId = req.params.userId;
     try {
         const session = await Session.findOne({user1_id: userId });
-        res.send(session.user2_id);
-    } catch(err) {
-        try {
-            const session = await Session.findOne({user2_id: userId });
-            res.status.send(session.user1_id);
-        } catch(err) {
-            res.status(500).send("User Id has not been registered " + err);
+
+        if(!session) {
+            const session2 = await Session.findOne({user2_id: userId });
+            if(!session2) {
+                res.status(401).send(`A session for ${userId} does not exist`);
+            }
+            res.send(session.user2_id);            
+        } else {
+            res.send(session.user1_id);
         }
+        
+    } catch(err) {
+        res.status(500).send(`An error has occured retrieving ${userId}'s partner`);
     }
 });
 
@@ -92,9 +96,14 @@ router.get("/utterances/:userId", async (req, res) => {
     const userId = req.params.userId;
     try {
         const utterance = await Utterance.findOne({user_id: userId }).sort({_id: -1});
+
+        if(!report) {
+            res.status(401).send(`An utterance for ${userId} does not exist`);
+        }
+
         res.send(utterance);
     } catch(err) {
-        res.status(500).send("No utterances exist for user " + userId);
+        res.status(500).send(`An error has occured retrieving ${userId}'s latest utterance ` );
     }
 });
 
@@ -103,9 +112,14 @@ router.get("/reports/:userId", async (req, res) => {
     const userId = req.params.userId;
     try {
         const report = await Report.findOne({user_id: userId }).sort({_id: -1});
+
+        if(!report) {
+            res.status(401).send(`A report for ${userId} does not exist`);
+        }
+
         res.send(report);
     } catch(err) {
-        res.status(500).send("Report does not exist");
+        res.status(500).send("Failed to retrieve Report");
     }
 });
 
@@ -120,14 +134,18 @@ router.delete("/utterances", async (req, res) => {
     }
 });
 
-module.exports = router;
-
 //Adds an expression score to the array of scores a user has
 //This is updated every 5 minutes
-router.put("/users/:userId/expressionScore", async (req, res) => {
+router.put("/users/:userId/expressionScore/:newScore", async (req, res) => {
     const userId = req.params.userId;
-    const newScore = req.body.newScore;
+    const newScore = req.params.newScore;
     try {
+        const user = await User.findOne({user_id: userId});
+        
+        if(!user) {
+            res.status(401).send(`${userId} does not exist`);
+        }
+
         await User.updateOne(
             { user_id: userId },
             { $push: { expression_scores: newScore } });
@@ -136,3 +154,35 @@ router.put("/users/:userId/expressionScore", async (req, res) => {
         res.status(500).send(`Failed to update ${userId}'s expression score`);
     }
 });
+
+//Calculates the number of times a user has been interrupted by their partner
+router.get('/utterances/interruptions/:userId/:partnerId', async (req, res) => {
+    const userId = req.params.userId;
+    const partnerId = req.params.partnerId;
+    try {
+        const utterances = await Utterance.find({user_id: userId });
+
+        if(!utterances) {
+            res.status(401).send(`No utterances exist for ${userId}`);
+        }
+
+        var interruptionCount = 0;
+
+        for(utterance of utterances) {
+            const start = utterance.start_time;
+            const end = utterance.end_time;
+
+            const interruptions = await Utterance.find({user_id: partnerId, start_time: {$gte : start, $lte: end}});
+
+            if(interruptions) {
+                interruptionCount += interruptions.length;
+            }
+        }        
+        res.send(`${interruptionCount}`);
+        
+    } catch(err) {
+        res.status(500).send(`Failed to retrieve interruptions for ${userId} `);
+    }
+});
+
+module.exports = router;

@@ -3,9 +3,8 @@ const { Schema } = mongoose;
 
 const utteranceSchema = new Schema ({
     user_id: String,
-    is_navigator: Boolean,
-    start_time: String,  
-    end_time: String,
+    start_time: Number,  
+    end_time: Number,
     transcript: String
 });
 
