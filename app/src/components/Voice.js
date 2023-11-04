@@ -15,6 +15,7 @@ const Voice = ({userId, stream})=> {
     async function openMicrophone(microphone, socket) {
         await microphone.start(500); 
      
+        //send mic data as soon as its available
         microphone.ondataavailable = (e) => {
             if(socket && socket.readyState === 1 /* OPEN */) {
               console.log("client: sent data to websocket");
@@ -24,16 +25,6 @@ const Voice = ({userId, stream})=> {
       }
 
       async function start(socket){
-
-        // while(socket.readyState === 0) {
-        //     // //wait for socket to be open
-        //     // if(socket.readyState >= 2) {
-        //     //     break;
-        //     // }
-        // }
-
-        // socket.send({user_id: userId});
-
         let microphone;
         if (!microphone) {
             // open and close the microphone
@@ -47,21 +38,21 @@ const Voice = ({userId, stream})=> {
 
 
 
-     React.useEffect( () => {        
-        const ws = new WebSocket('ws://localhost:42069');
-        // const ws = io('ws//localhost:42069');
+      React.useEffect( () => {        
 
-        ws.onopen = () => {
-            console.log('WebSocket connection established.');
-            ws.send(userId);
-
-            //TODO send a message to tell transcription.js the user id
-        };
-
-        ws.onclose = () => {
-            console.log('WebSocket connection closed.');
-        };
-
+          //connect to the websocket created in transcription.js
+          const ws = new WebSocket('ws://localhost:42069');
+    
+          ws.onopen = () => {
+              console.log('WebSocket connection established.');
+              //on open, send first message containing user id
+              ws.send(userId);
+          };
+    
+          ws.onclose = () => {
+              console.log('WebSocket connection closed.');
+          };
+          
         start(ws);
 
         // Clean up the WebSocket connection when the component unmounts

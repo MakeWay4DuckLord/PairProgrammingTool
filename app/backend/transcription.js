@@ -14,8 +14,9 @@ let localStartTime;
 
 var currentUtterance = {
     user_id: "sentinel",
-    transcript: "",
     start_time: -1,
+    transcript: "",
+    end_time: -1,
 }
 
 const setupDeepgram = () => {
@@ -25,7 +26,7 @@ const setupDeepgram = () => {
       smart_format: true,
       model: "nova",
       timestamps: true,
-      endpointing: 10, //number of milliseconds of pause to differentiate utterances
+      endpointing: 10, //number of milliseconds of pause to differentiate utterances, may want to be tweaked
     });
 
     
@@ -37,7 +38,9 @@ const setupDeepgram = () => {
     
     deepgram.addListener("open", async () => {
         console.log("deepgram: connected");
-        localStartTime = Date.now() / 1000;
+
+        //get epoch time for synchronization when deepgram connection opens
+        localStartTime = Date.now() / 1000; 
         console.log(localStartTime);
   
       deepgram.addListener("close", async () => {
@@ -61,28 +64,34 @@ const setupDeepgram = () => {
             const transcript = data.channel.alternatives[0].transcript ?? "";
             const words = data.channel.alternatives[0].words;
             
-            //just skip this packet if there are no transcribed words
+            //only update current utterance if this packet has at least one word
             if(words[0]){ 
-                //add current data to the utterance variable
+
+                //add current transcript to the utterance variable
                 currentUtterance.transcript = currentUtterance.transcript + " " + transcript;
 
-                //if this is the start of a new uttterence update the start time
+                //if this is the start of a new utterance update the start time
                 if(currentUtterance.start_time === -1) {
                     //this will need some kind of offset for syncronization for interuption detection
                     currentUtterance.start_time = words[0].start + localStartTime;
                 }
+
+                //update end time
+                currentUtterance.end_time = words[words.length-1].end + localStartTime;
                 
-                //if this is the end of an utterance
-                if(data.speech_final) {    
-                    //send utterance to database (for now log it)
-                    currentUtterance.end_time = words[words.length-1].end + localStartTime;
-                    // axios.post("sd0vm01.csc.ncsu.edu:443/api/utterances", currentUtterance)
-                    console.log(currentUtterance);
-                    //reset the utterance variable
-                    currentUtterance.transcript = "";
-                    currentUtterance.start_time = -1;
-                    //end time will be overwritten before sending, and userID should never change
-                }
+            }
+
+            //if end of utterance, and currentUtterance has any data in it, post to database and reset
+            if(data.speech_final && currentUtterance.transcript.length > 0) {
+                //post to database    
+                axios.post(process.env.API_URL + "/api/utterances", currentUtterance)
+
+                //log utterance for debugging
+                console.log(currentUtterance);
+
+                //reset the utterance variable
+                currentUtterance.transcript = "";
+                currentUtterance.start_time = -1;
             }
 
             // console.log(data.speech_final)
@@ -115,10 +124,11 @@ async function startTranscription() {
             //this should only happen once
             // console.log(message);
             if(currentUtterance.user_id === "sentinel") {
-                // console.log('first message:')
-                // console.log(message);
+                console.log('first message:')
                 currentUtterance.user_id = message;
-                // deepgram = setupDeepgram();
+                
+                // console.log(message);
+                // axios.post(process.env.API_URL + "/api/utterances", {"user_id":"User2618","start_time":1699122557.522,"end_time":1699122558.022,"transcript":" Hello?"});
             } else {
                 if (deepgram.getReadyState() === 1 /* OPEN */) {
                     // console.log("socket: data sent to deepgram");
@@ -135,13 +145,11 @@ async function startTranscription() {
                     console.log("socket: data couldn't be sent to deepgram");
                     console.log(deepgram.getReadyState());
                   }
-                // You can process the message and send a response back if needed.
             }
             ws.send('Server received your message.');
 
             
         });
-
         ws.on('close', () => {
             console.log('WebSocket disconnected');
         });
