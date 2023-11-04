@@ -36,9 +36,9 @@ router.post("/sessions/:user1_id/:user2_id", async (req, res) => {
 });
 
 // Insert a new User
-router.post("/users/:userId", async (req, res) => {
+router.post("/users/:user_id", async (req, res) => {
     const user = new User({
-        user_id: req.params.userId,
+        user_id: req.params.user_id,
         lines_of_code: 0,
         num_role_changes: 0,
         expression_scores: [0],
@@ -56,9 +56,9 @@ router.post("/users/:userId", async (req, res) => {
 // Insert a new utterance
 router.post("/utterances", async (req, res) => {
     const utterance = new Utterance({
-        user_id: req.body.userId,
-        start_time: req.body.startTime,  
-        end_time: req.body.endTime,
+        user_id: req.body.user_id,
+        start_time: req.body.start_time,  
+        end_time: req.body.end_time,
         transcript: req.body.transcript  
     });
     try {
@@ -72,11 +72,11 @@ router.post("/utterances", async (req, res) => {
 // Insert a report
 router.post("/reports", async (req, res) => {
     const report = new Report({
-        user_id: req.body.userId,
-        primary_communication: req.body.primaryCommunication,
-        leadership_style: req.body.leadershipStyle,
-        communication_style: req.body.communicationStyle,
-        self_efficacy_level: req.body.selfEfficacyLevel  
+        user_id: req.body.user_id,
+        primary_communication: req.body.primary_communication,
+        leadership_style: req.body.leadership_style,
+        communication_style: req.body.communication_style,
+        self_efficacy_level: req.body.self_efficacy_level  
     });
     try {
         await report.save();
@@ -87,8 +87,8 @@ router.post("/reports", async (req, res) => {
 });
 
 // Retrive a user's partner in a session
-router.get("/sessions/:userId", async (req, res) => {
-    const userId = req.params.userId;
+router.get("/sessions/:user_id", async (req, res) => {
+    const userId = req.params.user_id;
     try {
         const session = await Session.findOne({user1_id: userId });
 
@@ -108,8 +108,8 @@ router.get("/sessions/:userId", async (req, res) => {
 });
 
 //Retrieve a user's latest utterance
-router.get("/utterances/:userId", async (req, res) => {
-    const userId = req.params.userId;
+router.get("/utterances/:user_id", async (req, res) => {
+    const userId = req.params.user_id;
     try {
         const utterance = await Utterance.findOne({user_id: userId }).sort({_id: -1});
 
@@ -124,8 +124,8 @@ router.get("/utterances/:userId", async (req, res) => {
 });
 
 //Retrieve a user's report
-router.get("/reports/:userId", async (req, res) => {
-    const userId = req.params.userId;
+router.get("/reports/:user_id", async (req, res) => {
+    const userId = req.params.user_id;
     try {
         const report = await Report.findOne({user_id: userId }).sort({_id: -1});
 
@@ -152,9 +152,9 @@ router.delete("/utterances", async (req, res) => {
 
 //Adds an expression score to the array of scores a user has
 //This is updated every 5 minutes
-router.put("/users/:userId/expressionScore/:newScore", async (req, res) => {
-    const userId = req.params.userId;
-    const newScore = req.params.newScore;
+router.put("/users/:user_id/expressionScore/:new_score", async (req, res) => {
+    const userId = req.params.user_id;
+    const newScore = req.params.new_score;
     try {
         const user = await User.findOne({user_id: userId});
         
@@ -163,7 +163,7 @@ router.put("/users/:userId/expressionScore/:newScore", async (req, res) => {
         }
 
         await User.updateOne(
-            { user_id: userId },
+            { user_id: user_id },
             { $push: { expression_scores: newScore } });
         res.send(`Successfully updated ${userId}'s expression score`);
     } catch(err) {
@@ -172,9 +172,9 @@ router.put("/users/:userId/expressionScore/:newScore", async (req, res) => {
 });
 
 //Calculates the number of times a user has been interrupted by their partner
-router.get('/utterances/interruptions/:userId/:partnerId', async (req, res) => {
-    const userId = req.params.userId;
-    const partnerId = req.params.partnerId;
+router.get('/utterances/interruptions/:user_id/:partner_id', async (req, res) => {
+    const userId = req.params.user_id;
+    const partnerId = req.params.partner_id;
     try {
         const utterances = await Utterance.find({user_id: userId });
 
