@@ -11,9 +11,6 @@ const db = require('./config/db.js');
 const apiRoutes = require('./routes/api');
 app.use('/api', apiRoutes);
 
-// const voiceToText = require('./transcription.js');
-// app.use('/voice-to-text', voiceToText);
-
 const startTranscription = require('./transcription.js');
 startTranscription();
 
