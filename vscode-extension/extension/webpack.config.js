@@ -60,7 +60,7 @@ module.exports = [
       compress: true,
       // hot modular replacement
       hot: true,
-      port: 3000,
+      port: 8080,
       // get rids of the repeated header error
       allowedHosts: 'all'
     }
