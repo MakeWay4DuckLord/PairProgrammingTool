@@ -1,6 +1,7 @@
 import WebSocket from 'isomorphic-ws';
 
-export const ws = new WebSocket('ws://sd-vm01.csc.ncsu.edu');
+// export const ws = new WebSocket('ws://sd-vm01.csc.ncsu.edu');
+export const ws = new WebSocket('ws://localhost');
 var userId;
 var idRegistered = false;
 
