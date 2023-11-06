@@ -14,29 +14,6 @@ const Emotions = ({ videoStream, id }) => {
   const [numOfRequests, setNumOfRequests] = useState(0)
   const videoRef = useRef(null);
 
-  // useEffect(() => {
-  //   const connectWebSocket = () => {
-  //     // Create a new WebSocket connection when the component mounts
-  //     const newSocket = new WebSocket(`${endpoint}?apiKey=${encodeURIComponent(API_KEY)}`);
-  //     setSocket(newSocket);
-
-  //     newSocket.onclose = (event) => {
-  //       console.log('WebSocket connection closed:', event);
-  //       // Attempt to reconnect after a delay (e.g., 3 seconds)
-  //       setTimeout(connectWebSocket, 3000);
-  //     };
-  //   };
-
-  //   connectWebSocket();
-
-  //   return () => {
-  //     // Close the WebSocket connection when the component unmounts
-  //     if (socket) {
-  //       socket.close();
-  //     }
-  //   };
-  // }, []);
-
   function initializeWebSocket() {
     const newSocket = new WebSocket(`${endpoint}?apiKey=${encodeURIComponent(API_KEY)}`);
     newSocket.onclose = (event) => {

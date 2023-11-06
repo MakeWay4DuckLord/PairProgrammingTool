@@ -100,7 +100,7 @@ const VideoCall=({userId, partnerId, stream, caller})=> {
                     <button onClick={onHide}>Hide</button>
                 </div>
                 {/* <video muted={true} width={640} height={360} ref={videoRef} autoPlay/> */}
-                { isPaired && inDatabase && <Emotions muted={true} videoStream={sentStream} id={userId} />}
+                { isPaired && inDatabase && <Emotions muted={true} videoStream={stream} id={userId} />}
             </div>
         </>
     );
