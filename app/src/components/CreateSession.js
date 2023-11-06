@@ -10,7 +10,7 @@ const CreateSession = ({onSubmit, error, userId}) => {
             <h1>Create New Session</h1>
             <div className={styles.id}>
                 <label>Your unique ID: </label>
-                <label className={styles.userId}>{userId}</label>
+                <label data-testid="id" className={styles.userId}>{userId}</label>
             </div>
             <label className={styles.inputLabel}>Enter Your Partner's ID: </label>
             <input 
