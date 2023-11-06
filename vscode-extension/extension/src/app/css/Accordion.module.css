@@ -1,0 +1,23 @@
+.Accordion:global(.MuiPaper-root.MuiAccordion-root) {
+    padding: 0;
+    margin-bottom: 1px;
+}
+.Accordion:global(.MuiPaper-root .MuiAccordionDetails-root) {
+    padding: 0;
+}
+.Accordion:global(.MuiPaper-root .MuiAccordionDetails-root) p {
+    padding: 0px 8px;
+    margin-top: 0px;
+    font-size: 16px;
+}
+.Accordion:global(.MuiPaper-root.MuiAccordion-root .MuiAccordionSummary-content) {
+    font-weight: 700;
+    font-size: 18px;
+}
+.Accordion:global(.MuiPaper-root.MuiAccordion-root .MuiAccordionSummary-root.Mui-expanded) {
+    box-shadow: 1px 0px 3px black;
+}
+.Accordion:global(.MuiPaper-root.MuiAccordion-root .MuiAccordionSummary-root) {
+    min-height: 50px;
+    margin: 0px;
+}

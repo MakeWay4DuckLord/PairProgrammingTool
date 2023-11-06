@@ -1,0 +1,20 @@
+.score {
+    text-decoration: none;
+    margin: 5px;
+    font-size: 20px;
+    padding: 5px;
+    color: black;
+    font-weight: 700;
+}
+
+.small {
+    background-color: red;
+}
+
+.medium {
+    background-color: orange;
+}
+
+.large {
+    background-color: green;
+}

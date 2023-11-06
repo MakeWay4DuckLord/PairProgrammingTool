@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Peer from 'peerjs';
 import { faVolumeUp, faVolumeMute, faVideoCamera, faVideoSlash } from '@fortawesome/free-solid-svg-icons';
 import styles from '../styles/VideoCall.module.css';
+import Voice from "./Voice.js"
 import cx from 'classnames';
 import Emotions from './Emotions';
 import axios from 'axios';
@@ -101,6 +102,10 @@ const VideoCall=({userId, partnerId, stream, caller})=> {
                 </div>
                 {/* <video muted={true} width={640} height={360} ref={videoRef} autoPlay/> */}
                 { isPaired && inDatabase && <Emotions muted={true} videoStream={stream} id={userId} />}
+            </div>
+            {/* temp stuff for testing voice-to-text */}
+            <div>
+            <Voice userId={userId} stream={stream}/>
             </div>
         </>
     );

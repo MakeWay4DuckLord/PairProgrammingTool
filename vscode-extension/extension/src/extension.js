@@ -47,7 +47,7 @@ class SessionWebviewViewProvider {
 		<body>
 			<div id="root">
 			</div>
-			<script src="http://localhost:3000${'/index.js'}"></script>
+			<script src="http://localhost:8080${'/index.js'}"></script>
 		</body>
 		</html>`;
 	}

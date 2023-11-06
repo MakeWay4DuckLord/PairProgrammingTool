@@ -1,0 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;500;600&family=Kumbh+Sans:wght@400;700&display=swap');
+:root {
+    --blue: #49DEFF;
+    --blue-hover: #75e6ff;
+}
+
+.SessionContainer {
+    font-family: 'Kumbh Sans', sans-serif;
+}
+.SessionContainer h1 {
+    text-decoration: underline;
+    display: inline;
+}
+.SessionContainer button {
+    background-color: var(--blue);
+    color: black;
+    width: 100%;
+    font-size: 20px;
+    border-radius: 5px;
+    font-family: 'Kumbh Sans', sans-serif;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid black;
+    box-shadow: 1px 1px 2px black;
+    font-weight: 700;
+}
+
+.SessionContainer button:hover {
+    background-color: var(--blue-hover);
+    cursor: pointer;
+}
