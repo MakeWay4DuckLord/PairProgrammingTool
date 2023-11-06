@@ -176,7 +176,7 @@ router.put("/users/:user_id/expressionScore/:new_score", async (req, res) => {
         }
 
         await User.updateOne(
-            { user_id: user_id },
+            { user_id: userId },
             { $push: { expression_scores: newScore } });
         res.send(`Successfully updated ${userId}'s expression score`);
     } catch(err) {
@@ -191,8 +191,10 @@ router.get('/utterances/interruptions/:user_id/:partner_id', async (req, res) =>
     try {
         const utterances = await Utterance.find({user_id: userId });
 
-        if(!utterances) {
-            res.status(401).send(`No utterances exist for ${userId}`);
+        const sessionUser = await Session.findOne({ $or: [{ user1_id: req.body.user_id }, { user2_id: req.body.user_id }] });
+
+        if (!sessionUser) {
+            res.status(409).send("A session does not exist with these users");
         }
 
         var interruptionCount = 0;
