@@ -1,25 +1,23 @@
 import WebSocket from 'isomorphic-ws';
 
-var port = 1080;
+var port = 10080;
 var connected = false;
 var ws;
 
-
-do {
-  try {
-    var toConnect = 'ws://localhost:' + port + '';
-    ws = new WebSocket(toConnect);
-    connected = true;
-  } catch (error) {
-    port++;
-  }
-} while (!connected);
-
-ws.onopen = () => {
+export const connect = () => {
+  do {
+    try {
+      var toConnect = 'ws://localhost:' + port + '/ws';
+      ws = new WebSocket(toConnect);
+      connected = true;
+    } catch (error) {
+      port++;
+    }
+  } while (!connected);
 
   ws.addEventListener("message", (event) => {
-    console.log(event.data);
     let msg = JSON.parse(event.data);
+    console.log(msg);
     switch (msg.action) {
       case "hello":
         ws.send(JSON.stringify({action: "hello"}));
@@ -37,6 +35,9 @@ ws.onopen = () => {
         console.log("idk man");
         break;
     }
-
   });
+
+  return ws;
 }
+
+

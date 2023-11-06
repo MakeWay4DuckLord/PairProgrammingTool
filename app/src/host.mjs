@@ -1,24 +1,26 @@
-import WebSocket, { WebSocketServer } from 'ws';
+import { WebSocketServer } from 'ws';
 
-var port = 1080;
+var port = 10080;
 var connected = false;
-var wss;
+export var wss;
 
-do {
-  try {
-    wss = new WebSocketServer({
-      port: port,
-      host: "localhost"
-    })
-    console.log(port);
-    connected = true;
-  } catch (error) {
-    port++;
-  }
-} while (!connected);
+export const bind = () => {
+  do {
+    try {
+      wss = new WebSocketServer({
+        port: port,
+        host: "localhost"
+      })
+      console.log(port);
+      connected = true;
+    } catch (error) {
+      port++;
+    }
+  } while (!connected);
+  return wss;
+}
 
 
-wss.on("connection", (ws, request) => {
-  console.log(`Connection from ${request.socket.remoteAddress}`);
-  ws.send(JSON.stringify({action: "hello"}));
-})
+export const sendData = (wss, data) => {
+  wss.send(JSON.stringify(data));
+}
