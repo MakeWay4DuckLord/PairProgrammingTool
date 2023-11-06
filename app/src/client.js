@@ -22,6 +22,9 @@ export const registerId = (id, setId, setAction, setPartnerId) => {
           idRegistered = true;
         // hello
         } else if (JSON.parse(event.data).action === 'hello') {
+          sleep(10000).then(() => {
+            ws.send(JSON.stringify({action: "keepalive"}));
+          })
         // id already in use
         } else if (!idRegistered) {
           let newId = generateId();
@@ -33,6 +36,10 @@ export const registerId = (id, setId, setAction, setPartnerId) => {
           setPartnerId(JSON.parse(event.data).partner)
         } else if (JSON.parse(event.data).action === 'error') {
           setAction(JSON.parse(event.data).action);
+        } else if (JSON.parse(event.data).action === 'keepalive') {
+          sleep(10000).then(() => {
+            ws.send(JSON.stringify({action: "keepalive"}));
+          })
         }
       });
     }
@@ -43,4 +50,8 @@ export const createPair = (id, partnerId, setMessage) => {
   ws.send(JSON.stringify({
     action: "pair", id1: id, id2: partnerId
   }));
+}
+
+export const sleep = (ms) => {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
