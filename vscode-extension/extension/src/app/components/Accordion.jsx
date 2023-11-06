@@ -1,11 +1,12 @@
 import React from 'react';
 import styles from '../css/Accordion.module.css';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Accordion as AccordionContainer, AccordionDetails, AccordionSummary } from '@mui/material'
 
 const Accordion = ({title, content}) => {
     return (
         <AccordionContainer className={styles.Accordion}>
-            <AccordionSummary>{title}</AccordionSummary>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>{title}</AccordionSummary>
             <AccordionDetails>{content}</AccordionDetails>
         </AccordionContainer>
     )

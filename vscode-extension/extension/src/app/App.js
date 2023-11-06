@@ -1,15 +1,13 @@
 import * as React from 'react';
 import Session from './components/Session'
+import EndSession from './components/EndSession'
 
 const App = () => {
-  const [page, setPage] = React.useState(localStorage.getItem('page'));
-  if (localStorage.getItem('page') === undefined) {
-    localStorage.setItem('page', 'start');
-    setPage('start');
-  }
+  const [page, setPage] = React.useState('start');
   return (
     <div>
-      <Session onSwitch={setPage}/>
+      {page === 'start' && <Session onSwitch={setPage}/>}
+      {page === 'end' && <EndSession onSwitch={setPage} />}
     </div>
   );
 };

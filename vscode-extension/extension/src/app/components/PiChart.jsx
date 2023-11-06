@@ -11,6 +11,7 @@ const PiChart = ({subject, metric, subject1, subject2, val1, val2, title}) => {
     data={data}
     className={styles.piChart}
     width={'110%'}
+    height={'90%'}
     options={{
         backgroundColor: 'transparent'
     }}
