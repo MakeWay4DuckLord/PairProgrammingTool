@@ -15,23 +15,23 @@ const VideoCall=({userId, partnerId, stream, caller})=> {
     const [hideVideo, setHideVideo] = React.useState(false);
     const [sentStream] = React.useState(stream.clone());
     const [isPaired, setIsPaired] = React.useState(false);
+    const [inDatabase, setIsInDatabase] = React.useState(false);
 
     var pairedId = null;
-    var id = null;
+    var user_id = null;
 
      React.useEffect( () => {
         if (videoRef.current) {
             videoRef.current.srcObject = sentStream;
         }
         //establish connection to signalling server
-        // const peer = new Peer(userId, {
-        //     // host: 'sd-vm01.csc.ncsu.edu',
-        //     host: 'localhost',
-        //     port: 443,
-        //     path: "/myapp"
-        // });
+        const peer = new Peer(userId, {
+            host: 'localhost',
+            port: 443,
+            path: "/myapp"
+        });
 
-        const peer = new Peer(userId, {});
+        // const peer = new Peer(userId, {});
 
         //once connection is established, log id and send a message to peer for debugging
         peer.on("open", id => {
@@ -46,8 +46,9 @@ const VideoCall=({userId, partnerId, stream, caller})=> {
                 outgoingCall.on('stream', (remoteStream) => {
                     partnerVideoRef.current.srcObject = remoteStream
                 });   
+                console.log("enters");
                 pairedId = partnerId;
-                id = id;
+                user_id = id;
                 setIsPaired(true);
 
             } else { //otherwise wait for a incoming call
@@ -67,7 +68,8 @@ const VideoCall=({userId, partnerId, stream, caller})=> {
     React.useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.post(`https://sd-vm01.csc.ncsu.edu:443/api/sessions/${userId}/${partnerId}`);
+                await axios.post(`http://sd-vm01.csc.ncsu.edu:443/api/sessions/${userId}/${partnerId}`);
+                setIsInDatabase(true);
             } catch (error) {
                 console.log(error);
             }
@@ -103,7 +105,7 @@ const VideoCall=({userId, partnerId, stream, caller})=> {
                     <button onClick={onHide}>Hide</button>
                 </div>
                 {/* <video muted={true} width={640} height={360} ref={videoRef} autoPlay/> */}
-                {isPaired && <Emotions muted={true} videoStream={sentStream} id={id} />}
+                { isPaired && inDatabase && <Emotions muted={true} videoStream={sentStream} id={userId} />}
             </div>
         </>
     );

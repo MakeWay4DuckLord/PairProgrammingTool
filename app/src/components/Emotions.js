@@ -5,7 +5,7 @@ import axios from 'axios';
 const API_KEY = `545WFZ9GWUaMHHffmHZuBlqW5AtwsBFnpdPEUKjnTF86GWsV`; // Replace with your actual API key
 const endpoint = 'wss://api.hume.ai/v0/stream/models';
 
-const score_interval = 50000 // calculate score every five minute (300000)
+const score_interval = 5000 // calculate score every five minute (300000)
 const emotion_interval = 500 // get an emotion response every half second 
 
 const Emotions = ({ videoStream, id }) => {
@@ -14,11 +14,44 @@ const Emotions = ({ videoStream, id }) => {
   const [numOfRequests, setNumOfRequests] = useState(0)
   const videoRef = useRef(null);
 
-  useEffect(() => {
-    // Create a new WebSocket connectisetNumOfRequests(0);on when the component mounts
-    const newSocket = new WebSocket(`${endpoint}?apiKey=${encodeURIComponent(API_KEY)}`);
-    setSocket(newSocket);
+  // useEffect(() => {
+  //   const connectWebSocket = () => {
+  //     // Create a new WebSocket connection when the component mounts
+  //     const newSocket = new WebSocket(`${endpoint}?apiKey=${encodeURIComponent(API_KEY)}`);
+  //     setSocket(newSocket);
 
+  //     newSocket.onclose = (event) => {
+  //       console.log('WebSocket connection closed:', event);
+  //       // Attempt to reconnect after a delay (e.g., 3 seconds)
+  //       setTimeout(connectWebSocket, 3000);
+  //     };
+  //   };
+
+  //   connectWebSocket();
+
+  //   return () => {
+  //     // Close the WebSocket connection when the component unmounts
+  //     if (socket) {
+  //       socket.close();
+  //     }
+  //   };
+  // }, []);
+
+  function initializeWebSocket() {
+    const newSocket = new WebSocket(`${endpoint}?apiKey=${encodeURIComponent(API_KEY)}`);
+    newSocket.onclose = (event) => {
+      console.log('WebSocket connection closed:', event);
+      // Attempt to reconnect after a delay (e.g., 3 seconds)
+      setTimeout(initializeWebSocket, 3000);
+    };
+  
+    return newSocket;
+  }
+  
+  useEffect(() => {
+    const newSocket = initializeWebSocket();
+    setSocket(newSocket);
+  
     return () => {
       // Close the WebSocket connection when the component unmounts
       if (newSocket) {
@@ -27,9 +60,16 @@ const Emotions = ({ videoStream, id }) => {
     };
   }, []);
 
+
   useEffect(() => {
     // Handle WebSocket events when the socket is set
     if (socket) {
+      if (socket.readyState === WebSocket.CLOSED) {
+        // The WebSocket is closed; attempt to reopen it
+        const newSocket = initializeWebSocket();
+        setSocket(newSocket);
+      }
+
       const video = videoRef.current;
 
       // Capture frames from the video stream and send them to the WebSocket server
@@ -40,7 +80,6 @@ const Emotions = ({ videoStream, id }) => {
         const ctx = canvas.getContext('2d');
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         const imageData = canvas.toDataURL('image/jpeg'); // Convert the frame to base64
-
         const message = {
           models: {
             face: {},
@@ -48,7 +87,10 @@ const Emotions = ({ videoStream, id }) => {
           data: imageData,
         };
 
-        socket.send(JSON.stringify(message));
+        if (socket.readyState == WebSocket.OPEN) {
+          socket.send(JSON.stringify(message));
+        
+        }
       };
 
       video.addEventListener('play', () => {
@@ -70,22 +112,21 @@ const Emotions = ({ videoStream, id }) => {
 
       socket.onmessage = (event) => {
         const receivedMessage = JSON.parse(event.data);
-        var emotionsArray = []
-        if ((receivedMessage !== null && receivedMessage.face.predictions !== null) || receivedMessage.face.predictions !== 0){
-          emotionsArray = receivedMessage.face.predictions[0].emotions;
-          console.log(emotionsArray)
-          if (emotionsArray !== null && emotionsArray.length !== 0) {
+        if (receivedMessage && receivedMessage.face && receivedMessage.face.predictions) {
+          const emotionsArray = receivedMessage.face.predictions[0].emotions;
+          console.log("gets emotions");
+          if (emotionsArray && emotionsArray.length > 0) {
             let maxEmotion = emotionsArray[0];
             for (let i = 1; i < emotionsArray.length; i++) {
               if (emotionsArray[i].score > maxEmotion.score) {
                 maxEmotion = emotionsArray[i];
               }
             }
-            setEmotion(maxEmotion.name)
-            setNumOfRequests(numOfRequests + 1);
+            setEmotion(maxEmotion.name);
+            setNumOfRequests((prevNumOfRequests) => prevNumOfRequests + 1);
           }
         }
-      };
+      };      
 
     }
   }, [socket]);
@@ -97,13 +138,15 @@ const Emotions = ({ videoStream, id }) => {
       var newScore = ((score + tempScore)/ numOfRequests);
       score = newScore;
     }
+    console.log("nor " + numOfRequests);
     if (numOfRequests >= (score_interval / emotion_interval)){
-      axios.put(`sd-vm01.csc.ncsu.edu:443/api/users/${id}/expressionScore/${score}`)
+      console.log("sends data");
+      axios.put(`http://sd-vm01.csc.ncsu.edu:443/api/users/${id}/expressionScore/${score}`)
       score = 0;
       setNumOfRequests(0);
     }
 
-  }, [emotion, numOfRequests])
+  }, [emotion, numOfRequests, id])
 
   useEffect(() => {
     if (videoRef.current) {
