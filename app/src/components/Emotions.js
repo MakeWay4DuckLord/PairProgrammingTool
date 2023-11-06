@@ -71,7 +71,7 @@ const Emotions = ({ videoStream, id }) => {
       socket.onmessage = (event) => {
         const receivedMessage = JSON.parse(event.data);
         var emotionsArray = []
-        if (receivedMessage !== null || receivedMessage.face.predictions !== null || receivedMessage.face.predictions.length !== 0 ){
+        if ((receivedMessage !== null && receivedMessage.face.predictions !== null) || receivedMessage.face.predictions !== 0){
           emotionsArray = receivedMessage.face.predictions[0].emotions;
           console.log(emotionsArray)
           if (emotionsArray !== null && emotionsArray.length !== 0) {
@@ -93,7 +93,7 @@ const Emotions = ({ videoStream, id }) => {
   useEffect(() => {
     var score = 0;
     var tempScore = emotions[emotion];
-    if (tempScore !== undefined || tempScore !== null || score !== NaN ) {
+    if (tempScore !== undefined && tempScore !== null && score !== NaN ) {
       var newScore = ((score + tempScore)/ numOfRequests);
       score = newScore;
     }
