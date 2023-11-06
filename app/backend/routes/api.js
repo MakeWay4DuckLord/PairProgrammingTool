@@ -16,21 +16,17 @@ router.post("/sessions/:user1_id/:user2_id", async (req, res) => {
     });
 
     try {
+        // Check if a session already exists with these users
+        const sessionUserOne = await Session.findOne({ $or: [{ user1_id: user1Id }, { user2_id: user1Id }] });
+        const sessionUserTwo = await Session.findOne({ $or: [{ user1_id: user2Id }, { user2_id: user2Id }] });
 
-        //check if a session already exists with these users
-        const sessionUserOne1 = await Session.findOne({user1_id: user1Id });
-        const sessionUserOne2 = await Session.findOne({user2_id: user1Id });
-        const sessionUserTwo1 = await Session.findOne({user1_id: user2Id });
-        const sessionUserTwo2 = await Session.findOne({user2_id: user2Id });
-
-        if(sessionUserOne1 || sessionUserOne2 || sessionUserTwo1 || sessionUserTwo2) {
-            res.status(500).send("User id has already been registered");
+        if (sessionUserOne || sessionUserTwo) {
+            res.status(409).send("Session already exists with these users");
+        } else {
+            await session.save();
+            res.send(session);
         }
-
-
-        await session.save();
-        res.send(session);
-    } catch(err) {
+    } catch (err) {
         res.status(500).send("Failed to insert Session");
     }
 });
@@ -46,6 +42,11 @@ router.post("/users/:user_id", async (req, res) => {
     });
     
     try {
+        const sessionUser = await Session.findOne({ $or: [{ user1_id: req.params.user_id }, { user2_id: req.params.user_id }] });
+        if (!sessionUser) {
+            res.status(409).send("A session does not exist with these users ");
+        }
+
         await user.save();
         res.send(user);
     } catch(err) {
@@ -62,6 +63,12 @@ router.post("/utterances", async (req, res) => {
         transcript: req.body.transcript  
     });
     try {
+        const sessionUser = await Session.findOne({ $or: [{ user_id: req.body.user_id }, { user2_id: req.body.user_id }] });
+
+        if (!sessionUser) {
+            res.status(409).send("A session does not exist with these users");
+        }
+
         await utterance.save();
         res.send(utterance);
     } catch(err) {
@@ -79,6 +86,12 @@ router.post("/reports", async (req, res) => {
         self_efficacy_level: req.body.self_efficacy_level  
     });
     try {
+        const sessionUser = await Session.findOne({ $or: [{ user1_id: req.body.user_id }, { user2_id: req.body.user_id }] });
+
+        if (!sessionUser) {
+            res.status(409).send("A session does not exist with these users");
+        }
+
         await report.save();
         res.send(report);
     } catch(err) {
