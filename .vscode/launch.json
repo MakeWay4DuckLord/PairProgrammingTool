@@ -7,7 +7,9 @@
 			],
 			"name": "Launch Extension",
 			"outFiles": [
-				"${workspaceFolder}/extension/src/**/*.js"
+
+				"${workspaceFolder}/vscode-extension/extension/src/**/*.js"
+
 			],
 			"request": "launch",
 			"type": "extensionHost",

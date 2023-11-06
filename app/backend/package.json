@@ -1,16 +1,17 @@
 {
-  "name": "peer",
+  "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "start": "peerjs --port 443 --key peerjs --path /myapp",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "peer": "^1.0.1"
+    "@deepgram/sdk": "^2.4.0",
+    "dotenv": "^16.3.1",
+    "mongoose": "^7.6.3",
+    "socket.io": "^4.7.2"
   }
 }
