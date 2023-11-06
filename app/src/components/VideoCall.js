@@ -31,8 +31,6 @@ const VideoCall=({userId, partnerId, stream, caller})=> {
             path: "/myapp"
         });
 
-        // const peer = new Peer(userId, {});
-
         //once connection is established, log id and send a message to peer for debugging
         peer.on("open", id => {
             console.log("Your ID is " + id);
@@ -59,9 +57,6 @@ const VideoCall=({userId, partnerId, stream, caller})=> {
                     incomingCall.on("stream", remoteStream => partnerVideoRef.current.srcObject = remoteStream);
                 });
             }
-            // add the user into the database
-            
-            // axios.post(`sd-vm01.csc.ncsu.edu:443/api/session/${id}/${partnerId}`)
         });
     });
 
