@@ -71,7 +71,7 @@ const Emotions = ({ videoStream, id }) => {
       socket.onmessage = (event) => {
         const receivedMessage = JSON.parse(event.data);
         var emotionsArray = []
-        if (receivedMessage !== null && receivedMessage.face.predictions !== null && receivedMessage.face.predictions.length !== 0 ){
+        if (receivedMessage !== null || receivedMessage.face.predictions !== null || receivedMessage.face.predictions.length !== 0 ){
           emotionsArray = receivedMessage.face.predictions[0].emotions;
           console.log(emotionsArray)
           if (emotionsArray !== null && emotionsArray.length !== 0) {
@@ -93,13 +93,12 @@ const Emotions = ({ videoStream, id }) => {
   useEffect(() => {
     var score = 0;
     var tempScore = emotions[emotion];
-    if (tempScore !== undefined && tempScore !== null && score !== NaN ) {
-      // setNumOfRequests(numOfRequests + 1)
+    if (tempScore !== undefined || tempScore !== null || score !== NaN ) {
       var newScore = ((score + tempScore)/ numOfRequests);
       score = newScore;
     }
     if (numOfRequests >= (score_interval / emotion_interval)){
-      axios.put(`sd-vm01.csc.ncsu.edu/users/${id}/expressionScore/${score}`)
+      axios.put(`sd-vm01.csc.ncsu.edu:443/api/users/${id}/expressionScore/${score}`)
       score = 0;
       setNumOfRequests(0);
     }

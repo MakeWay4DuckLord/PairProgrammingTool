@@ -14,7 +14,9 @@ const VideoCall=({userId, partnerId, stream, caller})=> {
     const [videoOn, setVideoOn] = React.useState(true);
     const [hideVideo, setHideVideo] = React.useState(false);
     const [sentStream] = React.useState(stream.clone());
+    const [isPaired, setIsPaired] = React.useState(false);
 
+    var pairedId = null;
     var id = null;
 
      React.useEffect( () => {
@@ -43,7 +45,11 @@ const VideoCall=({userId, partnerId, stream, caller})=> {
                 //get their stream to display
                 outgoingCall.on('stream', (remoteStream) => {
                     partnerVideoRef.current.srcObject = remoteStream
-                });                
+                });   
+                pairedId = partnerId;
+                id = id;
+                setIsPaired(true);
+
             } else { //otherwise wait for a incoming call
                 peer.on("call", incomingCall => {
                     //answer with your a/v stream
@@ -53,10 +59,23 @@ const VideoCall=({userId, partnerId, stream, caller})=> {
                 });
             }
             // add the user into the database
-            axios.put(`sd-vm01.csc.ncsu.edu/....`)
-            id = id;
+            
+            // axios.post(`sd-vm01.csc.ncsu.edu:443/api/session/${id}/${partnerId}`)
         });
     });
+
+    React.useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.post(`https://sd-vm01.csc.ncsu.edu:443/api/sessions/${userId}/${partnerId}`);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        if (isPaired){
+            fetchData();
+        }
+    }, [isPaired]);
 
     const onMute = () => {
         sentStream.getAudioTracks()[0].enabled = muted;
@@ -84,7 +103,7 @@ const VideoCall=({userId, partnerId, stream, caller})=> {
                     <button onClick={onHide}>Hide</button>
                 </div>
                 {/* <video muted={true} width={640} height={360} ref={videoRef} autoPlay/> */}
-                <Emotions muted={true} videoStream={sentStream} id={id} />
+                {isPaired && <Emotions muted={true} videoStream={sentStream} id={id} />}
             </div>
         </>
     );
