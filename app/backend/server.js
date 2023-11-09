@@ -14,3 +14,5 @@ app.use('/api', apiRoutes);
 app.listen(443, () => {
   console.log('Server is running on port 443');
 });
+
+module.exports = app;

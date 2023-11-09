@@ -1,16 +1,14 @@
-const config = require('../config')
 const mongoose = require('mongoose');
+require("dotenv").config();
 
 const connectToMongoDB = async () => {
     try {
-        const username = config.mongoDBLogin.username;
-        const password = config.mongoDBLogin.password;
 
         // Connect to the MongoDb database that is running on the NCSU VM
-        mongoose.connect('mongodb://sd-vm01.csc.ncsu.edu:27017/pairProgrammingTool', {
+        mongoose.connect(`${process.env.MONGODB_URI}`, {
             auth: {
-                username: username,
-                password: password,
+                username: process.env.MONGO_USERNAME,
+                password: process.env.MONGO_PASSWORD,
               },
         }).then(
             () => { 

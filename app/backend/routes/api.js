@@ -15,6 +15,22 @@ router.post("/sessions/:user1_id/:user2_id", async (req, res) => {
         user2_id: user2Id
     });
 
+    const user1 = new User({
+        user_id: user1Id,
+        lines_of_code: 0,
+        num_role_changes: 0,
+        expression_scores: [0],
+        num_interruptions: 0    
+    });
+
+    const user2 = new User({
+        user_id: user2Id,
+        lines_of_code: 0,
+        num_role_changes: 0,
+        expression_scores: [0],
+        num_interruptions: 0    
+    });
+
     try {
         // Check if a session already exists with these users
         const sessionUserOne = await Session.findOne({ $or: [{ user1_id: user1Id }, { user2_id: user1Id }] });
@@ -24,33 +40,12 @@ router.post("/sessions/:user1_id/:user2_id", async (req, res) => {
             res.status(409).send("Session already exists with these users");
         } else {
             await session.save();
+            await user1.save();
+            await user2.save();
             res.send(session);
         }
     } catch (err) {
         res.status(500).send("Failed to insert Session");
-    }
-});
-
-// Insert a new User
-router.post("/users/:user_id", async (req, res) => {
-    const user = new User({
-        user_id: req.params.user_id,
-        lines_of_code: 0,
-        num_role_changes: 0,
-        expression_scores: [0],
-        num_interruptions: 0    
-    });
-    
-    try {
-        const sessionUser = await Session.findOne({ $or: [{ user1_id: req.params.user_id }, { user2_id: req.params.user_id }] });
-        if (!sessionUser) {
-            res.status(409).send("A session does not exist with these users ");
-        }
-
-        await user.save();
-        res.send(user);
-    } catch(err) {
-        res.status(500).end("Failed to insert User");
     }
 });
 
