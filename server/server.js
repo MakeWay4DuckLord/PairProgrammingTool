@@ -1,7 +1,20 @@
 const webSocketServer = require('ws').Server;
+var cors = require('cors');
 // import express from 'express';
 const express =  require('express');
+var bodyParser = require("body-parser");
 const app = express();
+app.use(bodyParser.json());
+
+if (process.env.NODE_ENV !== 'test') {
+  require('./config/db.js');
+}
+
+app.use(cors());
+
+// Import and use the db api routes
+const apiRoutes = require('./routes/api');
+app.use('/api', apiRoutes);
 
 // const peerServer = PeerServer({ port: 443 });
 
@@ -136,3 +149,5 @@ wss.on("connection", (ws, request) => {
     }
   })
 })
+
+module.exports = app;
