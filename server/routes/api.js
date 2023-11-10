@@ -174,7 +174,7 @@ router.get('/utterances/interruptions/:user_id/:partner_id', async (req, res) =>
 
         var interruptionCount = 0;
 
-        for(utterance of utterances) {
+        for(const utterance of utterances) {
             const start = utterance.start_time;
             const end = utterance.end_time;
 
@@ -187,7 +187,7 @@ router.get('/utterances/interruptions/:user_id/:partner_id', async (req, res) =>
         return res.send(`${interruptionCount}`);
         
     } catch(err) {
-        return res.status(500).send(`Failed to retrieve interruptions for ${userId} `);
+        return res.status(500).send(`Failed to retrieve interruptions for ${userId}`);
     }
 });
 
