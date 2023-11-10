@@ -1,0 +1,18 @@
+.App button {
+    background-color: var(--blue);
+    color: black;
+    width: 100%;
+    font-size: 20px;
+    border-radius: 5px;
+    font-family: 'Kumbh Sans', sans-serif;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid black;
+    box-shadow: 1px 1px 2px black;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.App button:hover {
+    background-color: var(--blue-hover);
+}

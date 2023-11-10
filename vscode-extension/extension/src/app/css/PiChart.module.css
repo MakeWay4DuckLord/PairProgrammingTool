@@ -1,0 +1,15 @@
+.piChart {
+    margin-top: -5%;
+}
+
+.piChart div {
+    left: -5%;
+}
+
+.piChart div g text {
+    font-size: 11px;
+}
+
+.piChart rect {
+    fill: transparent;
+}
