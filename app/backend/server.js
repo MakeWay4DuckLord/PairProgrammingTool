@@ -3,7 +3,10 @@ var cors = require('cors')
 const app = express();
 var bodyParser = require("body-parser");
 app.use(bodyParser.json());
-const db = require('./config/db.js');
+
+if (process.env.NODE_ENV !== 'test') {
+  require('./config/db.js');
+}
 
 app.use(cors())
 
