@@ -27,9 +27,9 @@ const VideoCall=({userId, partnerId, stream, caller})=> {
         }
         //establish connection to signalling server
         const peer = new Peer(userId, {
-            host: 'localhost',
-            port: 443,
-            path: "/myapp"
+            host: 'sd-vm01.csc.ncsu.edu',
+            port: 80,
+            path: "/webrtc/myapp"
         });
 
         //once connection is established, log id and send a message to peer for debugging
