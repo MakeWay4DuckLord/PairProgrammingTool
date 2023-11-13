@@ -1,26 +1,34 @@
 services:
-  proxy:
-    image: nginx:latest
-    restart: unless-stopped
-    volumes:
-      - ./proxy/default.conf.template:/etc/nginx/templates/default.conf.template
-    ports:
-      - "80:80"
-
-  api:
-    build:
-      context: ./api
-      dockerfile: Dockerfile
-    restart: unless-stopped
-    volumes:
-      - ./api/src:/app/src
-      - ./api/static:/app/static
-      - ./api/templates:/app/templates
-      - ./api/server.js:/app/server.js
-  db:
-    image: mongo:latest
-    restart: unless-stopped
-    environment:
-      # MONGO_INITDB_ROOT_USERNAME:
-      # MONGO_INITDB_ROOT_PASSWORD:
-      MONGO_INITDB_DATABASE: kuttal
+   proxy:
+      image: nginx:latest
+      restart: unless-stopped
+      volumes:
+         - ./proxy/default.conf.template:/etc/nginx/templates/default.conf.template
+      ports:
+         - "80:80"
+   api:
+      build:
+         context: ./server
+         dockerfile: Dockerfile
+      restart: unless-stopped
+      environment:
+         - PORT=80
+      volumes:
+         - ./server/api:/server/api
+         - ./server/websocket:/server/websocket
+         - ./server/recognitionModels:/server/recognitionModels
+         - ./server/server.js:/server/server.js
+   app:
+      build: ./app
+      restart: unless-stopped
+      volumes:
+         - ./app/src:/app/src
+      environment:
+         - PORT=80
+   db:
+      image: mongo:latest
+      restart: unless-stopped
+      environment:
+         # MONGO_INITDB_ROOT_USERNAME:
+         # MONGO_INITDB_ROOT_PASSWORD:
+         MONGO_INITDB_DATABASE: kuttal

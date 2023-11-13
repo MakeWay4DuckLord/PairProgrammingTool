@@ -1,7 +1,6 @@
 const express = require('express');
 const websocketRouter = express.Router();
 
-
 let clients = new Set();
 var userIDs = [];
 var pairings = {};
@@ -80,6 +79,7 @@ websocketRouter.ws('/ws', (ws, req) => {
     clients.delete(ws);
     console.log('client closed');
   });
+
 });
 
 

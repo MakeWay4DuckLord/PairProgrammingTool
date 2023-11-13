@@ -27,7 +27,7 @@ const VideoCall=({userId, partnerId, stream, caller})=> {
         }
         //establish connection to signalling server
         const peer = new Peer(userId, {
-            host: 'sd-vm01.csc.ncsu.edu',
+            host: '0.0.0.0',
             port: 80,
             path: "/webrtc/myapp"
         });
@@ -64,7 +64,7 @@ const VideoCall=({userId, partnerId, stream, caller})=> {
     React.useEffect(() => {
         const fetchData = async () => {
             try {
-                await axios.post(`http://sd-vm01.csc.ncsu.edu:443/api/sessions/${userId}/${partnerId}`);
+                await axios.post(`http://sd-vm01.csc.ncsu.edu/server/api/sessions/${userId}/${partnerId}`);
                 setIsInDatabase(true);
             } catch (error) {
                 console.log(error);
@@ -100,13 +100,17 @@ const VideoCall=({userId, partnerId, stream, caller})=> {
                     <button onClick={onVideoChange}>{videoOn ? <FontAwesomeIcon icon={faVideoCamera}/> : <FontAwesomeIcon icon={faVideoSlash}/>}</button>
                     <button onClick={onHide}>Hide</button>
                 </div>
+                <div className={styles.videoContainer} data-testid="video-call">
+                    <video width={640} height={360} ref={videoRef} autoPlay/>
+                </div>
                 {/* <video muted={true} width={640} height={360} ref={videoRef} autoPlay/> */}
-                { isPaired && inDatabase && <Emotions muted={true} videoStream={stream} id={userId} />}
             </div>
-            {/* temp stuff for testing voice-to-text */}
-            <div>
-            <Voice userId={userId} stream={stream}/>
-            </div>
+            { isPaired && inDatabase && 
+            <>
+                <Emotions muted={true} videoStream={stream} id={userId} />
+                <Voice userId={userId} stream={stream}/>
+            </>
+            }
         </>
     );
 };

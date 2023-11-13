@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import emotions from './Constants';
 import axios from 'axios';
+import styles from '../styles/Emotion.module.css'
 
 const API_KEY = `545WFZ9GWUaMHHffmHZuBlqW5AtwsBFnpdPEUKjnTF86GWsV`; // Replace with your actual API key
 const endpoint = 'wss://api.hume.ai/v0/stream/models';
@@ -118,7 +119,7 @@ const Emotions = ({ videoStream, id }) => {
     console.log("nor " + numOfRequests);
     if (numOfRequests >= (score_interval / emotion_interval)){
       console.log("sends data");
-      axios.put(`http://sd-vm01.csc.ncsu.edu:443/api/users/${id}/expressionScore/${score}`)
+      axios.put(`http://sd-vm01.csc.ncsu.edu/server/api/users/${id}/expressionScore/${score}`)
       score = 0;
       setNumOfRequests(0);
     }
@@ -133,8 +134,8 @@ const Emotions = ({ videoStream, id }) => {
 
   return (
     <div>
-      <video ref={videoRef} width={640} height={360} autoPlay />
-      <div>
+      <video className={styles.video} ref={videoRef} muted={true} width={640} height={360} autoPlay />
+      <div className={styles.emotion}>
         <p>{emotion}</p>
       </div>
     </div>
