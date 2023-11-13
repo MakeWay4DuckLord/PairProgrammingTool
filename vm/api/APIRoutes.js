@@ -1,12 +1,18 @@
-const express = require("express");
-const router = express.Router();
-const Session = require("../models/Session");
-const User = require("../models/User");
-const Utterance = require("../models/Utterance");
-const Report = require("../models/Report");
+const express = require('express');
+const apiRouter = express.Router();
+apiRouter.use(express.json());
 
+const Session = require("./data/models/Session");
+const User = require("./data/models/User");
+const Utterance = require("./data/models/Utterance");
+const Report = require("./data/models/Report");
+
+
+/************\
+* API ROUTES *
+\************/
 // Insert a Session
-router.post("/sessions/:user1_id/:user2_id", async (req, res) => {
+apiRouter.post("/sessions/:user1_id/:user2_id", async (req, res) => {
     const user1Id = req.params.user1_id;
     const user2Id = req.params.user2_id;
 
@@ -50,7 +56,7 @@ router.post("/sessions/:user1_id/:user2_id", async (req, res) => {
 });
 
 // Insert a new utterance
-router.post("/utterances", async (req, res) => {
+apiRouter.post("/utterances", async (req, res) => {
     const utterance = new Utterance({
         user_id: req.body.user_id,
         start_time: req.body.start_time,  
@@ -72,7 +78,7 @@ router.post("/utterances", async (req, res) => {
 });
 
 // Insert a report
-router.post("/reports", async (req, res) => {
+apiRouter.post("/reports", async (req, res) => {
     const report = new Report({
         user_id: req.body.user_id,
         primary_communication: req.body.primary_communication,
@@ -96,7 +102,7 @@ router.post("/reports", async (req, res) => {
 
 
 // Retrive a user 
-router.get("/users/:user_id", async (req, res) => {
+apiRouter.get("/users/:user_id", async (req, res) => {
     const userId = req.params.user_id;
     try {
         const user = await User.findOne({user_id: userId });
@@ -112,7 +118,7 @@ router.get("/users/:user_id", async (req, res) => {
 });
 
 //Retrieve a user's report
-router.get("/reports/:user_id", async (req, res) => {
+apiRouter.get("/reports/:user_id", async (req, res) => {
     const userId = req.params.user_id;
     try {
         const report = await Report.findOne({user_id: userId }).sort({_id: -1});
@@ -129,7 +135,7 @@ router.get("/reports/:user_id", async (req, res) => {
 
 //Delete all utterances
 //This is used at the end of a session to clean up the collection
-router.delete("/utterances", async (req, res) => {
+apiRouter.delete("/utterances", async (req, res) => {
     try {
         await Utterance.deleteMany({});
         return res.send("Successfully deleted all utterances");
@@ -140,7 +146,7 @@ router.delete("/utterances", async (req, res) => {
 
 //Adds an expression score to the array of scores a user has
 //This is updated every 5 minutes
-router.put("/users/:user_id/expressionScore/:new_score", async (req, res) => {
+apiRouter.put("/users/:user_id/expressionScore/:new_score", async (req, res) => {
     const userId = req.params.user_id;
     const newScore = req.params.new_score;
     try {
@@ -160,7 +166,7 @@ router.put("/users/:user_id/expressionScore/:new_score", async (req, res) => {
 });
 
 //Calculates the number of times a user has been interrupted by their partner
-router.get('/utterances/interruptions/:user_id/:partner_id', async (req, res) => {
+apiRouter.get('/utterances/interruptions/:user_id/:partner_id', async (req, res) => {
     const userId = req.params.user_id;
     const partnerId = req.params.partner_id;
     try {
@@ -191,4 +197,4 @@ router.get('/utterances/interruptions/:user_id/:partner_id', async (req, res) =>
     }
 });
 
-module.exports = router;
+module.exports = apiRouter
