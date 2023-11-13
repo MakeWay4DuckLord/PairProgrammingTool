@@ -5,7 +5,11 @@ var userId;
 var partnerId;
 var connections = [];
 
+<<<<<<< HEAD
 websocketRouter.ws('/extension/ws', (ws, req) => {
+=======
+websocketRouter.ws('/ws', (ws, req) => {
+>>>>>>> 89988377 (Setup React App and Transcription to Run on VM.)
   connections.push(ws);
   // send them a hello
   ws.send(JSON.stringify({action: "hello"}));

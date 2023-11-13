@@ -1,7 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import emotions from './Constants';
+<<<<<<< HEAD
 import axios from 'axios';
 import styles from '../styles/Emotion.module.css'
+=======
+<<<<<<< HEAD:app/src/components/Emotions.js
+import axios from 'axios'
+=======
+import axios from 'axios';
+import styles from '../styles/Emotion.module.css'
+>>>>>>> c9a48618 (Setup React App and Transcription to Run on VM.):vm/app/src/components/Emotions.js
+>>>>>>> 89988377 (Setup React App and Transcription to Run on VM.)
 
 const API_KEY = `545WFZ9GWUaMHHffmHZuBlqW5AtwsBFnpdPEUKjnTF86GWsV`; // Replace with your actual API key
 const endpoint = 'wss://api.hume.ai/v0/stream/models';
@@ -119,7 +128,11 @@ const Emotions = ({ videoStream, id }) => {
     console.log("nor " + numOfRequests);
     if (numOfRequests >= (score_interval / emotion_interval)){
       console.log("sends data");
+<<<<<<< HEAD
       axios.put(`https://sd-vm01.csc.ncsu.edu/server/api/users/${id}/expressionScore/${score}`)
+=======
+      axios.put(`http://sd-vm01.csc.ncsu.edu/server/api/users/${id}/expressionScore/${score}`)
+>>>>>>> 89988377 (Setup React App and Transcription to Run on VM.)
       score = 0;
       setNumOfRequests(0);
     }

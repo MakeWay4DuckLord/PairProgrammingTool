@@ -9,5 +9,9 @@ RUN npm install
 COPY . .
 
 ENV PORT 80
+<<<<<<< HEAD
 ENV WDS_SOCKET_PORT 443
+=======
+# ENV WDS_SOCKET_PORT 443
+>>>>>>> 89988377 (Setup React App and Transcription to Run on VM.)
 ENTRYPOINT [ "npm", "start"]
