@@ -113,7 +113,7 @@ apiRouter.get("/users/:user_id", async (req, res) => {
 
         return res.send(user);
     } catch(err) {
-        return res.status(500).send(`An error has occured retrieving ${userId}'s partner`);
+        return res.status(500).send(`An error has occured retrieving ${userId}'s partner` + err);
     }
 });
 
