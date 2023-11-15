@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from '../css/Accordion.module.css';
+import styles from '../styles/Accordion.module.css';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Accordion as AccordionContainer, AccordionDetails, AccordionSummary } from '@mui/material'
 
