@@ -6,7 +6,6 @@ server {
 }
 
 server {
-
     server_name _;
     location / {
         proxy_http_version 1.1;
@@ -50,6 +49,6 @@ server {
     } # end location
 
     listen 443 ssl;
-    ssl_certificate /etc/letsencrypt/live/sd-vm01.csc.ncsu.edu/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/sd-vm01.csc.ncsu.edu/privkey.pem;
+    ssl_certificate ./fullchain.pem;
+    ssl_certificate_key ./privkey.pem;
 }
