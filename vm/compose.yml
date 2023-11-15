@@ -7,7 +7,7 @@ services:
       volumes:
          - ./proxy/default.conf.template:/etc/nginx/templates/default.conf.template
          - ./proxy/fullchain1.pem:/etc/nginx/fullchain.pem
-         - ./proxy/privkey1.pem.template:/etc/nginx/privkey.pem
+         - ./proxy/privkey1.pem:/etc/nginx/privkey.pem
       ports:
          - "80:80"
          - "443:443"
