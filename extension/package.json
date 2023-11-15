@@ -16,7 +16,7 @@
       "\\.(css|scss)$": "identity-obj-proxy"
     },
     "testMatch": [
-      "<rootDir>/extension/test/**/*.test.js"
+      "<rootDir>/test/**/*.test.js"
     ]
   },
   "engines": {
@@ -26,7 +26,7 @@
     "Other"
   ],
   "activationEvents": [],
-  "browser": "./extension/src/extension.js",
+  "browser": "./src/extension.js",
   "contributes": {
     "views": {
       "pair-programming-extension": [
@@ -42,15 +42,15 @@
         {
           "id": "pair-programming-extension",
           "title": "Pair Programming Session",
-          "icon": "./extension/src/media/icon.png"
+          "icon": "./src/media/icon.png"
         }
       ]
     }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
-    "start": "webpack serve --mode development --config ./extension/webpack.config.js",
-    "watch": "webpack serve --mode development --config ./extension/webpack.config.js",
+    "start": "webpack serve --mode development --config ./webpack.config.js",
+    "watch": "webpack serve --mode development --config ./webpack.config.js",
     "test": "jest --coverage",
     "package": "webpack --mode production"
   },

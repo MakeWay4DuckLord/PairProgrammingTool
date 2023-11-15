@@ -15,21 +15,21 @@ const Session = ({onSwitch}) => {
             <h1>Your Collaboration Metrics</h1>
             <Accordion 
                 title="Code Contribution"
-                content={
-                <>
+                content=
+                {<div>
                     <PiChart subject="Code Contribution" 
                     subject1="Your Lines of Code" 
                     subject2="Your Partner's Lines of Code" 
                     metric="Lines of Code" 
                     val1={10} val2={20} />
                     <p>{codeMessage}</p>
-                </>
-                }
+                </div>}
+                
             />
             <Accordion title="Voice Activity" content={
-            <>
-                <p className={styles.voice}>You've have interrupted your partner <p className={styles.interruptions}>{interruptions}</p> times!</p>
-            </>
+            <div>
+                <span className={styles.voice}>You've have interrupted your partner <p className={styles.interruptions}>{interruptions}</p> times!</span>
+            </div>
             } />
             <button onClick={endSession}>End Session</button>
         </div>

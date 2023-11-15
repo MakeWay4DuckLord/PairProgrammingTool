@@ -12,13 +12,13 @@ module.exports = [
   {
     name: 'webpack',
     mode: "development",
-    entry: './extension/src/app/index.js',
+    entry: './src/app/index.js',
     target: 'web',
     output: {
       // name of the script used in the webview panel
       filename: 'index.js',
       // put this index "file" (that is never actually created) inside the app directory
-      path: path.resolve(__dirname, './extension/src/app')
+      path: path.resolve(__dirname, './src/app')
     },
     resolve: {
       // look for js first then jsx if searching for a specific filename
