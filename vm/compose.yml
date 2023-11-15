@@ -1,6 +1,8 @@
 services:
    proxy:
-      image: nginx:latest
+      build:
+         context: ./proxy
+         dockerfile: Dockerfile
       restart: unless-stopped
       volumes:
          - ./proxy/default.conf.template:/etc/nginx/templates/default.conf.template
