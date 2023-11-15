@@ -38,4 +38,4 @@ services:
       env_file:
          - .env
       ports:
-         - "2433:27017"
+         - "27017:27017"
