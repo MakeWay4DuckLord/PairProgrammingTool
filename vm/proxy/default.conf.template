@@ -4,6 +4,13 @@ server {
   server_name _;
   return 301 https://$host$request_uri;
 }
+<<<<<<< HEAD
+=======
+
+server {
+
+    server_name _;
+>>>>>>> a18fb3c7 (Changed to handle new VM certificate.)
 
 server {
     server_name _;
@@ -32,6 +39,7 @@ server {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto https;
+<<<<<<< HEAD
     } # end location
     
     location /server/ {
@@ -46,6 +54,8 @@ server {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto https;
+=======
+>>>>>>> a18fb3c7 (Changed to handle new VM certificate.)
     } # end location
     location /server/ {
         proxy_http_version 1.1;
@@ -54,15 +64,19 @@ server {
         proxy_set_header Accept-Encoding gzip;
 
         proxy_pass http://api:3000/;
-        #rewrite ^/webrtc/(.*)$ /$1 break;
+        #rewrite ^/api/(.*)$ /$1 break;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto https;
-
     } # end location
 
     listen 443 ssl;
+<<<<<<< HEAD
     ssl_certificate fullchain.pem;
     ssl_certificate_key privkey.pem;
+=======
+    ssl_certificate /etc/letsencrypt/live/sd-vm01.csc.ncsu.edu/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/sd-vm01.csc.ncsu.edu/privkey.pem;
+>>>>>>> a18fb3c7 (Changed to handle new VM certificate.)
 }
