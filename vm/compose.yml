@@ -35,3 +35,5 @@ services:
       restart: unless-stopped
       env_file:
          - .env
+      ports:
+         - "2433:27017"
