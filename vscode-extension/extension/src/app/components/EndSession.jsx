@@ -1,7 +1,7 @@
 import * as React from 'react';
 import PiChart from './PiChart';
 import Accordion from './Accordion'
-import styles from '../css/EndSession.module.css'
+import styles from '../styles/EndSession.module.css'
 import Score from './Score'
 
 const EndSession = ({onSwitch}) => {  

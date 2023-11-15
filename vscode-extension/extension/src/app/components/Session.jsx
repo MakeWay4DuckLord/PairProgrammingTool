@@ -1,7 +1,7 @@
 import * as React from 'react';
 import PiChart from './PiChart';
 import Accordion from './Accordion'
-import styles from '../css/Session.module.css'
+import styles from '../styles/Session.module.css'
 
 const Session = ({onSwitch}) => {  
     const [codeMessage, setCodeMessage] = React.useState("You're contributing evenly! Keep up the great work.");

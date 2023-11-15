@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from '../css/Score.module.css';
+import styles from '../styles/Score.module.css';
 import cx from 'classnames';
 
 const Score = ({number}) => {
