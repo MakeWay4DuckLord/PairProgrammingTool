@@ -30,3 +30,8 @@ services:
          - ./app/src:/app/src
       environment:
          - PORT=80
+   db:
+      image: mongo:latest
+      restart: unless-stopped
+      env_file:
+         - .env
