@@ -41,7 +41,7 @@ const Voice = ({userId, stream})=> {
       React.useEffect( () => {        
 
           //connect to the websocket created in transcription.js
-          const ws = new WebSocket('wss://0.0.0.0/server/voice');
+          const ws = new WebSocket('wss://sd-vm01.csc.ncsu.edu/server/voice');
     
           ws.onopen = () => {
               console.log('WebSocket connection established.');
