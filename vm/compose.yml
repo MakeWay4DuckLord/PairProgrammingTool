@@ -33,6 +33,8 @@ services:
    db:
       image: mongo:latest
       restart: unless-stopped
+      volumes:
+         - "./database/data:/data/db"
       env_file:
          - .env
       ports:
