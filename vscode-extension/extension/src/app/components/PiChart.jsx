@@ -1,6 +1,6 @@
 import { Chart } from "react-google-charts";
 import React from 'react';
-import styles from '../css/PiChart.module.css';
+import styles from '../styles/PiChart.module.css';
 
 const PiChart = ({subject, metric, subject1, subject2, val1, val2, title}) => {
     const [data, setData] = React.useState([[subject, metric], [subject1, val1], [subject2, val2]]);
