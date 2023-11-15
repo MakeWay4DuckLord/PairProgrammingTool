@@ -49,6 +49,6 @@ server {
     } # end location
 
     listen 443 ssl;
-    ssl_certificate ./fullchain.pem;
-    ssl_certificate_key ./privkey.pem;
+    ssl_certificate fullchain.pem;
+    ssl_certificate_key privkey.pem;
 }
