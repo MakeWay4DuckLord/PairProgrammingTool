@@ -9,5 +9,5 @@ RUN npm install
 COPY . .
 
 ENV PORT 80
-# ENV WDS_SOCKET_PORT 443
+ENV WDS_SOCKET_PORT 443
 ENTRYPOINT [ "npm", "start"]

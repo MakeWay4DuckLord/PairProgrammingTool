@@ -6,6 +6,7 @@ services:
          - ./proxy/default.conf.template:/etc/nginx/templates/default.conf.template
       ports:
          - "80:80"
+         - "443:443"
    api:
       build:
          context: ./server

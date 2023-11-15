@@ -4,3 +4,4 @@
 *.gz
 */coverage/*
 .env
+.DS_*
