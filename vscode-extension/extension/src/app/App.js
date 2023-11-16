@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Session from './components/Session'
 import EndSession from './components/EndSession'
-import styles from './css/App.module.css'
+import styles from './styles/App.module.css'
 
 const App = () => {
   const [page, setPage] = React.useState('');
