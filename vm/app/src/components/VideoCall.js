@@ -63,7 +63,7 @@ const VideoCall=({userId, partnerId, stream, caller})=> {
     React.useEffect(() => {
         const fetchData = async () => {
             try {
-                await axios.post(`http://sd-vm01.csc.ncsu.edu/server/api/sessions/${userId}/${partnerId}`);
+                await axios.post(`https://sd-vm01.csc.ncsu.edu/server/api/sessions/${userId}/${partnerId}`);
                 setIsInDatabase(true);
             } catch (error) {
                 console.log(error);
