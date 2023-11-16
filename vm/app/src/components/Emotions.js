@@ -119,7 +119,7 @@ const Emotions = ({ videoStream, id }) => {
     console.log("nor " + numOfRequests);
     if (numOfRequests >= (score_interval / emotion_interval)){
       console.log("sends data");
-      axios.put(`http://sd-vm01.csc.ncsu.edu/server/api/users/${id}/expressionScore/${score}`)
+      axios.put(`https://sd-vm01.csc.ncsu.edu/server/api/users/${id}/expressionScore/${score}`)
       score = 0;
       setNumOfRequests(0);
     }
