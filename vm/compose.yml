@@ -34,9 +34,8 @@ services:
       image: mongo:latest
       restart: unless-stopped
       volumes:
-         - "./database/data:/data/db"
-         - "./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro"
-      command: [--auth]
+         - ./database/data:/data/db
+         - ./docker-entrypoint-initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
       env_file:
          - .env
       ports:
