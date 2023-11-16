@@ -41,12 +41,7 @@ const Voice = ({userId, stream})=> {
       React.useEffect( () => {        
 
           //connect to the websocket created in transcription.js
-<<<<<<< HEAD
         const ws = new WebSocket('wss://sd-vm01.csc.ncsu.edu/server/voice'); 
-=======
-          const ws = new WebSocket('wss://0.0.0.0/server/voice');
-    
->>>>>>> a18fb3c7 (Changed to handle new VM certificate.)
           ws.onopen = () => {
               console.log('WebSocket connection established.');
               //on open, send first message containing user id
