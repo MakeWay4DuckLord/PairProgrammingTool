@@ -1,6 +1,5 @@
 services:
    proxy:
-<<<<<<< HEAD
       build:
          context: ./proxy
          dockerfile: Dockerfile
@@ -12,18 +11,6 @@ services:
       ports:
          - "80:80"
          - "443:443"
-=======
-      image: nginx:latest
-      restart: unless-stopped
-      volumes:
-         - ./proxy/default.conf.template:/etc/nginx/templates/default.conf.template
-      ports:
-         - "80:80"
-<<<<<<< HEAD
->>>>>>> 89988377 (Setup React App and Transcription to Run on VM.)
-=======
-         - "443:443"
->>>>>>> a18fb3c7 (Changed to handle new VM certificate.)
    api:
       build:
          context: ./server
@@ -46,7 +33,6 @@ services:
    db:
       image: mongo:latest
       restart: unless-stopped
-<<<<<<< HEAD
       volumes:
          - ./database/data:/data/db
          - ./database/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
@@ -54,9 +40,3 @@ services:
          - .env
       ports:
          - "27017:27017"
-=======
-      environment:
-         # MONGO_INITDB_ROOT_USERNAME:
-         # MONGO_INITDB_ROOT_PASSWORD:
-         MONGO_INITDB_DATABASE: kuttal
->>>>>>> 89988377 (Setup React App and Transcription to Run on VM.)
