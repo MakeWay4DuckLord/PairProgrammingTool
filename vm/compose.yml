@@ -35,6 +35,7 @@ services:
       restart: unless-stopped
       volumes:
          - ./database/data:/data/db
+         - ./database/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
       env_file:
          - .env
       ports:

@@ -8,8 +8,8 @@ const connectToMongoDB = async () => {
 
         mongoose.connect(`${process.env.MONGODB_URI}`, {
             auth: {
-                username: process.env.MONGO_INITDB_ROOT_USERNAME,
-                password: process.env.MONGO_INITDB_ROOT_PASSWORD,
+                username: process.env.MONGO_USER,
+                password: process.env.MONGO_PASSWORD,
               },
         }).then(
             () => { 
