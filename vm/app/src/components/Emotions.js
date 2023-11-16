@@ -2,8 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import emotions from './Constants';
 import axios from 'axios';
 import styles from '../styles/Emotion.module.css'
-import axios from 'axios';
-import styles from '../styles/Emotion.module.css'
 
 const API_KEY = `545WFZ9GWUaMHHffmHZuBlqW5AtwsBFnpdPEUKjnTF86GWsV`; // Replace with your actual API key
 const endpoint = 'wss://api.hume.ai/v0/stream/models';
