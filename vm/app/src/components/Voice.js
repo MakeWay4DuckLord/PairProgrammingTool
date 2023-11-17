@@ -9,7 +9,11 @@ const Voice = ({userId, stream})=> {
     function getMicrophone() {
         const audioStream = stream.clone();
         audioStream.removeTrack(audioStream.getVideoTracks()[0]);
-        return new MediaRecorder(audioStream);
+        const options = {
+          mimeType: "audio/webm;codec=opus",
+          // mimeType: "web/opus",
+        }
+        return new MediaRecorder(audioStream, options);
     }
 
     async function openMicrophone(microphone, socket) {
@@ -19,6 +23,7 @@ const Voice = ({userId, stream})=> {
         microphone.ondataavailable = (e) => {
             if(socket && socket.readyState === 1 /* OPEN */) {
               console.log("client: sent data to websocket");
+              console.log("data: " + e.data);
               socket.send(e.data);
             };
         }

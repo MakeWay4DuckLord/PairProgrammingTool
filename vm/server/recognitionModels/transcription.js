@@ -27,6 +27,7 @@ const setupDeepgram = () => {
       smart_format: true,
       model: "nova",
       timestamps: true,
+      encoding: "opus",
       endpointing: 10, //number of milliseconds of pause to differentiate utterances, may want to be tweaked
     });
 
@@ -56,7 +57,7 @@ const setupDeepgram = () => {
       });
 
       deepgram.addListener("transcriptReceived", (packet) => {
-        console.log("deepgram: packet received");
+        console.log("deepgram: packet received: " + packet);
         const data = JSON.parse(packet);
         const { type } = data;
         switch (type) {
@@ -123,6 +124,8 @@ websocketRouter.ws('/voice', (ws, req) => {
     } else {
       if (deepgram.getReadyState() === 1 /* OPEN */) {
         deepgram.send(message);
+        console.log(message);
+
       } else if (deepgram.getReadyState() >= 2 /* 2 = CLOSING, 3 = CLOSED */) {
           console.log("socket: data couldn't be sent to deepgram");
           console.log("socket: retrying connection to deepgram");

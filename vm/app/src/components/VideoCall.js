@@ -100,7 +100,7 @@ const VideoCall=({userId, partnerId, stream, caller})=> {
                     <button onClick={onHide}>Hide</button>
                 </div>
                 <div className={styles.videoContainer} data-testid="video-call">
-                    <video width={640} height={360} ref={videoRef} autoPlay/>
+                    <video width={640} height={360} ref={videoRef} muted={true} autoPlay/>
                 </div>
                 {/* <video muted={true} width={640} height={360} ref={videoRef} autoPlay/> */}
             </div>
