@@ -28,6 +28,7 @@ const setupDeepgram = () => {
       model: "nova",
       timestamps: true,
       encoding: "opus",
+      sample_rate: 100000,
       endpointing: 10, //number of milliseconds of pause to differentiate utterances, may want to be tweaked
     });
 

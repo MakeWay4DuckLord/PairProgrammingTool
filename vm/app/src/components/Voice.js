@@ -11,6 +11,7 @@ const Voice = ({userId, stream})=> {
         audioStream.removeTrack(audioStream.getVideoTracks()[0]);
         const options = {
           mimeType: "audio/webm;codec=opus",
+          audioBitsPerSecond: 100000,
           // mimeType: "web/opus",
         }
         return new MediaRecorder(audioStream, options);
