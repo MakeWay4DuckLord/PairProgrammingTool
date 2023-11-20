@@ -11,14 +11,14 @@ const Voice = ({userId, stream})=> {
         audioStream.removeTrack(audioStream.getVideoTracks()[0]);
         const options = {
           mimeType: "audio/webm;codec=opus",
-          audioBitsPerSecond: 100000,
+          bitsPerSecond: 25000000,
           // mimeType: "web/opus",
         }
         return new MediaRecorder(audioStream, options);
     }
 
     async function openMicrophone(microphone, socket) {
-        await microphone.start(500); 
+        await microphone.start(5000); 
      
         //send mic data as soon as its available
         microphone.ondataavailable = (e) => {
