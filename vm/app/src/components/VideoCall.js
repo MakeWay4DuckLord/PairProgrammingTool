@@ -51,6 +51,7 @@ const VideoCall=({userId, partnerId, stream, caller})=> {
 
             } else { //otherwise wait for a incoming call
                 peer.on("call", incomingCall => {
+                    setIsPaired(true);
                     //answer with your a/v stream
                     incomingCall.answer(sentStream);
                     //display your partners a/v stream
