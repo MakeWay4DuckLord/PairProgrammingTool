@@ -8,6 +8,9 @@ const url = window.location.href;
 let params = new URLSearchParams(url);
 // export const extensionID = url.substring(url.indexOf("="));
 export const extensionID = params.get("extension");
+export const getEID = () => {
+  return extensionID;
+}
 
 root.render(
   <React.StrictMode>
