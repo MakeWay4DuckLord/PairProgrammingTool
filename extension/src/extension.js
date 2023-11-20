@@ -11,13 +11,14 @@ function sleep(ms) {
 }
 
 function generateEID() {
+	const letters = 'ABCDEFGHJKLMNOPQRSTUVWXYZ';
 	let id = [];
 	
 	for (let i = 0; i < 8; i++) {
 		// 65 = A, 90 = Z
-		id.push(String.fromCharCode(Math.floor(Math.random * 25) + 65));
+		id.push(letters.charAt(Math.random * 25));
 	}
-	return id;
+	return id.toString();
 }
 
 function connect(ws) {

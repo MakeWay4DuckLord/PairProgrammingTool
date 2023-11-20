@@ -2,7 +2,7 @@ import * as React from 'react';
 import Session from './components/Session'
 import EndSession from './components/EndSession'
 import styles from './styles/App.module.css'
-import {extensionID} from '../extension'
+// import {extensionID} from 'extension.js'
 
 const App = () => {
   const [page, setPage] = React.useState('');
