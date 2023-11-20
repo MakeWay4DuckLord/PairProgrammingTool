@@ -2,7 +2,7 @@
 
 import WebSocket from 'isomorphic-ws'
 
-import {extensionID} from './index'
+import {extensionID} from './index.js'
 
 export const ws = new WebSocket('wss://sd-vm01.csc.ncsu.edu/server/ws');
 var userId;
