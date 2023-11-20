@@ -71,7 +71,9 @@ websocketRouter.ws('/ws', (ws, req) => {
         } else {
           userIDs.push(id);
           extensionPairs[eid] = id;
-          sendPacket(ws, {action: "registered", id: id})
+          sendPacket(ws, {action: "registered", id: id});
+          let pairedExtension = Object.keys(extensionPairs).find(key => extensionPairs[key] === message.id);
+          sendPacket(extensionConnections[pairedExtension], { action: "paired", id: extensionPairs[extensionId]});
         }
 
         break;
@@ -82,7 +84,7 @@ websocketRouter.ws('/ws', (ws, req) => {
     
         if (returns.worked) {
           sendPacket(ws, {action: "start", partner: message.id2});
-          sendPacket()
+          // sendPacket()
               
           if (!(connections[message.id2] === undefined)) {
             connections[message.id2].forEach((ws) => {
@@ -125,6 +127,9 @@ websocketRouter.ws('/ws', (ws, req) => {
         if (extensionPairs[extensionId] !== undefined) {
           sendPacket(ws, { action: "paired", id: extensionPairs[extensionId]});
         } 
+        break;
+      case "loc":
+        console.log("The user typed " + msg.count + "words.");
         break;
       default:
         console.log("WS: idk man");

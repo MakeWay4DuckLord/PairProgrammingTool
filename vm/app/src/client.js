@@ -2,6 +2,8 @@
 
 import WebSocket from 'isomorphic-ws'
 
+import {extensionID} from './index'
+
 export const ws = new WebSocket('wss://sd-vm01.csc.ncsu.edu/server/ws');
 var userId;
 var idRegistered = false;
@@ -16,7 +18,7 @@ export const registerId = (id, setId, setAction, setPartnerId) => {
     // wait for connection to establish
     ws.onopen = () => {
       // register ID
-      ws.send(JSON.stringify({ action: "id", id: id}));
+      ws.send(JSON.stringify({ action: "id", id: id, eid: extensionID }));
       // wait to see if ID is correctly registered
       ws.addEventListener("message", (event) => {
         // id successfully registered
