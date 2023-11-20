@@ -5,7 +5,7 @@ import App from './App';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 const url = window.location.href;
-let params = URLSearchParams(url);
+let params = new URLSearchParams(url);
 // export const extensionID = url.substring(url.indexOf("="));
 export const extensionID = params.get("extension");
 
