@@ -13,12 +13,11 @@ function sleep(ms) {
 function generateEID() {
 	const letters = 'ABCDEFGHJKLMNOPQRSTUVWXYZ';
 	let id = [];
-	
 	for (let i = 0; i < 8; i++) {
-		// 65 = A, 90 = Z
 		id.push(letters.charAt(Math.random * 25));
 	}
-	return id.toString();
+	var blank = new String(id);
+	return blank;
 }
 
 function connect(ws) {
@@ -51,6 +50,9 @@ function activate(context) {
 					break;
 				case "registered1":
 					orange.appendLine("Registered with server: " + msg.id);
+					sleep(5000).then(() => {
+						ws.send(JSON.stringify({ action: "keepalive" }));
+					})
 					break;
 				case "paired":
 					orange.appendLine("Paired id: " + msg.id);
