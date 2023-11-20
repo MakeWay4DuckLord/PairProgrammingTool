@@ -60,7 +60,7 @@ function activate(context) {
 					break;
 				case "keepalive":
 					sleep(5000).then(() => {
-						ws.send(JSON.stringify({ action: "keepalive" }));
+						ws.send(JSON.stringify({ action: "keepalive", eid: extensionID}));
 					})
 					break;
 				default:

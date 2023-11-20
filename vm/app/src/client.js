@@ -42,7 +42,7 @@ export const registerId = (id, setId, setAction, setPartnerId) => {
           setAction(JSON.parse(event.data).action);
         } else if (JSON.parse(event.data).action === 'keepalive') {
           sleep(10000).then(() => {
-            ws.send(JSON.stringify({action: "keepalive"}));
+            ws.send(JSON.stringify({action: "keepalive", id: id}));
           })
         }
       });
