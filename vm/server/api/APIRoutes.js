@@ -197,4 +197,24 @@ apiRouter.get('/utterances/interruptions/:user_id/:partner_id', async (req, res)
     }
 });
 
+// Inserts lines of code to a user
+apiRouter.put('/users/:user_id/linesOfCode/:line_count', async (req, res) => {
+    const userId = req.params.user_id;
+    const lineCount = req.params.line_count;
+    try {
+        const user = await User.findOne({user_id: userId});
+        
+        if(!user) {
+            return res.status(409).send(`${userId} does not exist`);
+        }
+
+        await User.updateOne(
+            { user_id: userId },
+            { lines_of_code: lineCount  });
+        return res.send(`Successfully updated ${userId}'s lines of code`);
+    } catch(err) {
+       return res.status(500).send(`Failed to update ${userId}'s expression score`);
+    }
+});
+
 module.exports = apiRouter
