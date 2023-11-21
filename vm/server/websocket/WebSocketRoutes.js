@@ -48,7 +48,7 @@ websocketRouter.ws('/extension/ws', (ws, req) => {
 
 
 websocketRouter.ws('/ws', (ws, req) => {
-  extensions.add(ws);
+  clients.add(ws);
   console.log('New client');
   sendPacket(ws, {action: "hello"});
   ws.on('message', (msg) => {
@@ -73,7 +73,7 @@ websocketRouter.ws('/ws', (ws, req) => {
           extensionPairs[eid] = id;
           sendPacket(ws, {action: "registered", id: id});
 
-          let pairedExtension = Object.keys(extensionPairs).find(key => extensionPairs[key] === message.eid);
+          let pairedExtension = Object.keys(extensionPairs).find(key => extensionPairs[key] === id);
           if (pairedExtension !== undefined) {
             sendPacket(extensionConnections[pairedExtension], { action: "paired", id: id});
           } else {

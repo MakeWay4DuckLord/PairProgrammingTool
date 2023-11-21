@@ -27,7 +27,7 @@ export const registerId = (id, setId, setAction, setPartnerId) => {
         // hello
         } else if (JSON.parse(event.data).action === 'hello') {
           sleep(10000).then(() => {
-            ws.send(JSON.stringify({action: "keepalive"}));
+            ws.send(JSON.stringify({action: "keepalive", id: id}));
           })
         // id already in use
         } else if (!idRegistered) {
