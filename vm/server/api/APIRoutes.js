@@ -213,7 +213,7 @@ apiRouter.put('/users/:user_id/linesOfCode/:line_count', async (req, res) => {
             { lines_of_code: lineCount  });
         return res.send(`Successfully updated ${userId}'s lines of code`);
     } catch(err) {
-       return res.status(500).send(`Failed to update ${userId}'s expression score`);
+       return res.status(500).send(`Failed to update ${userId}'s lines of code`);
     }
 });
 
