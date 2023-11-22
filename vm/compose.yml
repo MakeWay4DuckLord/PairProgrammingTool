@@ -30,3 +30,15 @@ services:
          - ./app/src:/app/src
       environment:
          - PORT=80
+      env_file:
+         - .env
+   db:
+      image: mongo:latest
+      restart: unless-stopped
+      volumes:
+         - ./database/data:/data/db
+         - ./database/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+      env_file:
+         - .env
+      ports:
+         - "27017:27017"
