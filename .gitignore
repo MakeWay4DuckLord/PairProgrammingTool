@@ -5,3 +5,4 @@
 */coverage/*
 .env
 .DS_*
+*/database/data/*

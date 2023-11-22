@@ -32,6 +32,7 @@ services:
          - PORT=80
       env_file:
          - .env
+
    db:
       image: mongo:latest
       restart: unless-stopped

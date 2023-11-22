@@ -5,7 +5,7 @@ var userId;
 var partnerId;
 var connections = [];
 
-websocketRouter.ws('/ws', (ws, req) => {
+websocketRouter.ws('/extension/ws', (ws, req) => {
   connections.push(ws);
   // send them a hello
   ws.send(JSON.stringify({action: "hello"}));

@@ -108,7 +108,6 @@ const Emotions = React.forwardRef(({ videoStream, id}, ref) => {
       } catch (error) {
         console.error("Error in axios.put:", error);
       }
-  
       score = 0;
       setNumOfRequests(0);
     }

@@ -9,16 +9,22 @@ const Voice = ({userId, stream})=> {
     function getMicrophone() {
         const audioStream = stream.clone();
         audioStream.removeTrack(audioStream.getVideoTracks()[0]);
-        return new MediaRecorder(audioStream);
+        const options = {
+          mimeType: "audio/webm;codec=opus",
+          bitsPerSecond: 25000000,
+          // mimeType: "web/opus",
+        }
+        return new MediaRecorder(audioStream, options);
     }
 
     async function openMicrophone(microphone, socket) {
-        await microphone.start(500); 
+        await microphone.start(5000); 
      
         //send mic data as soon as its available
         microphone.ondataavailable = (e) => {
             if(socket && socket.readyState === 1 /* OPEN */) {
               console.log("client: sent data to websocket");
+              console.log("data: " + e.data);
               socket.send(e.data);
             };
         }
@@ -41,8 +47,7 @@ const Voice = ({userId, stream})=> {
       React.useEffect( () => {        
 
           //connect to the websocket created in transcription.js
-          const ws = new WebSocket('wss://sd-vm01.csc.ncsu.edu/server/voice');
-    
+        const ws = new WebSocket('wss://sd-vm01.csc.ncsu.edu/server/voice'); 
           ws.onopen = () => {
               console.log('WebSocket connection established.');
               //on open, send first message containing user id
