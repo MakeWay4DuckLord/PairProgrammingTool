@@ -51,6 +51,7 @@ const VideoCall=({userId, partnerId, stream, caller})=> {
 
             } else { //otherwise wait for a incoming call
                 peer.on("call", incomingCall => {
+                    setIsPaired(true);
                     //answer with your a/v stream
                     incomingCall.answer(sentStream);
                     //display your partners a/v stream
@@ -100,7 +101,7 @@ const VideoCall=({userId, partnerId, stream, caller})=> {
                     <button onClick={onHide}>Hide</button>
                 </div>
                 <div className={styles.videoContainer} data-testid="video-call">
-                    <video width={640} height={360} ref={videoRef} autoPlay/>
+                    <video width={640} height={360} ref={videoRef} muted={true} autoPlay/>
                 </div>
                 {/* <video muted={true} width={640} height={360} ref={videoRef} autoPlay/> */}
             </div>
