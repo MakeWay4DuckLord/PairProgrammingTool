@@ -96,10 +96,7 @@ const Emotions = React.forwardRef(({ videoStream, id}, ref) => {
       score = newScore;
     }
   
-    console.log("nor " + numOfRequests);
     if (numOfRequests >= (score_interval / emotion_interval)) {
-      console.log("sends data");
-  
       try {
         axios.put(`https://sd-vm01.csc.ncsu.edu/server/api/users/${id}/expressionScore/${score}`)
           .then(() => {
