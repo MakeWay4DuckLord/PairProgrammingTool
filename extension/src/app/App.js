@@ -2,7 +2,6 @@ import * as React from 'react';
 import Session from './components/Session'
 import EndSession from './components/EndSession'
 import styles from './styles/App.module.css'
-// import {extensionID} from 'extension.js'
 
 var url = "https://sd-vm01.csc.ncsu.edu/?extension=" + extensionID;
 

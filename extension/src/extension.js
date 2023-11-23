@@ -52,7 +52,7 @@ function activate(context) {
 					break;
 				case "registered1":
 					// orange.appendLine("Registered with server: " + msg.id);
-					sleep(5000).then(() => {
+					sleep(10000).then(() => {
 						ws.send(JSON.stringify({ action: "keepalive" }));
 					})
 					break;
@@ -61,7 +61,7 @@ function activate(context) {
 					appID = msg.id;
 					break;
 				case "keepalive":
-					sleep(5000).then(() => {
+					sleep(10000).then(() => {
 						ws.send(JSON.stringify({ action: "keepalive", eid: extensionID}));
 					})
 					break;
