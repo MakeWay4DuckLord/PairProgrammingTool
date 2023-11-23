@@ -74,10 +74,8 @@ websocketRouter.ws('/ws', (ws, req) => {
           sendPacket(ws, {action: "registered", id: id});
 
           let pairedExtension = Object.keys(extensionPairs).find(key => extensionPairs[key] === id);
-          if (pairedExtension !== undefined) {
+          if (pairedExtension !== undefined && extensionConnections[pairedExtension] !== undefined) {
             sendPacket(extensionConnections[pairedExtension], { action: "paired", id: id});
-          } else {
-            
           }
         }
 
