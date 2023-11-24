@@ -63,9 +63,11 @@ websocketRouter.ws('/extension/ws', (ws, req) => {
         })
         // send to partner's extension 
         sessionStatus[userPairs[pairings[message.id]]] = 'CLOSED';
-        extensionConnections[userPairs[pairings[message.id]]].forEach((ws) => {
-          sendPacket(ws, {action: "close", id: pairings[message.id], partnerId: message.id});
-        })
+        if (extensionConnections[userPairs[pairings[message.id]]] !== undefined) {
+          extensionConnections[userPairs[pairings[message.id]]].forEach((ws) => {
+            sendPacket(ws, {action: "close", id: pairings[message.id], partnerId: message.id});
+          })
+        }
       case "clear":
         let pairedExtension = Object.keys(extensionPairs).find(key => extensionPairs[key] === message.id);
         delete connections[message.id];
@@ -157,14 +159,18 @@ websocketRouter.ws('/ws', (ws, req) => {
         });
         // Send to extension
         sessionStatus[message.eid] = 'CLOSED';
-        extensionConnections[message.eid].forEach((ws) => {
-          sendPacket(ws, {action: "close", id: message.id, partnerId: pairings[message.id]});
-        })
+        if (extensionConnections[message.eid]) {
+          extensionConnections[message.eid].forEach((ws) => {
+            sendPacket(ws, {action: "close", id: message.id, partnerId: pairings[message.id]});
+          })
+        }
         // Send to partner's extension 
         sessionStatus[userPairs[pairings[message.id]]] = 'CLOSED';
-        extensionConnections[userPairs[pairings[message.id]]].forEach((ws) => {
-          sendPacket(ws, {action: "close", id: pairings[message.id], partnerId: message.id});
-        })
+        if (extensionConnections[userPairs[pairings[message.id]]] !== undefined) {
+          extensionConnections[userPairs[pairings[message.id]]].forEach((ws) => {
+            sendPacket(ws, {action: "close", id: pairings[message.id], partnerId: message.id});
+          })
+        }
 
         break;
       case "keepalive":

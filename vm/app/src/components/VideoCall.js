@@ -105,7 +105,7 @@ const VideoCall=({userId, partnerId, stream, caller})=> {
                 </div>
                 {/* <video muted={true} width={640} height={360} ref={videoRef} autoPlay/> */}
             </div>
-            { isPaired && videoRef.current !== null &&  
+            { isPaired && videoRef.current !== null && active &&  
             <>
                 <Emotions videoStream={stream} id={userId} ref={videoRef}/>
                 <Voice userId={userId} stream={stream}/>
