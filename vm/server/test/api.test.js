@@ -369,5 +369,40 @@ describe("user", () => {
 
             })
         });
-    })
+    });
+
+    describe("update lines of code", () => {
+        describe("given the user exists", () => {
+            it("should return a 200 success message", async () => {
+                //Create session
+                await supertest(app).post('/api/sessions/User1/User2');
+
+                //update score
+                const res = await supertest(app).put('/api/users/User1/linesOfCode/13');
+                expect(res.statusCode).toBe(200);
+                expect(res.text).toEqual("Successfully updated User1's lines of code");
+
+                //see if score is updated
+                let user1 = await supertest(app).get('/api/users/User1');
+                expect(user1.statusCode).toBe(200);
+                expect(user1.body.lines_of_code).toEqual(13);
+            });
+        });
+
+        describe("given the user doesn't exist", () => {
+            it("should return a 409 error", async () => {
+                //Create session
+                await supertest(app).post('/api/sessions/User1/User2');
+
+                //update score
+                const res = await supertest(app).put('/api/users/User3/linesOfCode/13');
+                expect(res.statusCode).toBe(409);
+                expect(res.text).toEqual("User3 does not exist");
+
+            })
+        });
+    });
+
+
+    
 });
