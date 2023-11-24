@@ -52,6 +52,7 @@ websocketRouter.ws('/extension/ws', (ws, req) => {
         sendPacket(ws, {action: "keepalive"});
         break;
       case "close":
+        console.log("close");
         sessionStatus[message.eid] = 'CLOSED';
         // send to app
         connections[message.id].forEach((ws) => {
@@ -68,6 +69,7 @@ websocketRouter.ws('/extension/ws', (ws, req) => {
             sendPacket(ws, {action: "close", id: pairings[message.id], partnerId: message.id});
           })
         }
+        break;
       case "clear":
         
     }
