@@ -2,6 +2,8 @@
 
 import WebSocket from 'isomorphic-ws'
 
+import {getEID} from './index.js'
+
 export const ws = new WebSocket('wss://sd-vm01.csc.ncsu.edu/server/ws');
 var userId;
 var idRegistered = false;
@@ -16,7 +18,7 @@ export const registerId = (id, setId, setAction, setPartnerId) => {
     // wait for connection to establish
     ws.onopen = () => {
       // register ID
-      ws.send(JSON.stringify({ action: "id", id: id}));
+      ws.send(JSON.stringify({ action: "id", id: id, eid: getEID() }));
       // wait to see if ID is correctly registered
       ws.addEventListener("message", (event) => {
         // id successfully registered
@@ -25,7 +27,7 @@ export const registerId = (id, setId, setAction, setPartnerId) => {
         // hello
         } else if (JSON.parse(event.data).action === 'hello') {
           sleep(10000).then(() => {
-            ws.send(JSON.stringify({action: "keepalive"}));
+            ws.send(JSON.stringify({action: "keepalive", id: id}));
           })
         // id already in use
         } else if (!idRegistered) {
@@ -40,7 +42,7 @@ export const registerId = (id, setId, setAction, setPartnerId) => {
           setAction(JSON.parse(event.data).action);
         } else if (JSON.parse(event.data).action === 'keepalive') {
           sleep(10000).then(() => {
-            ws.send(JSON.stringify({action: "keepalive"}));
+            ws.send(JSON.stringify({action: "keepalive", id: id}));
           })
         }
       });

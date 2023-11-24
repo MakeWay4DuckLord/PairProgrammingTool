@@ -101,7 +101,7 @@
     "source-map-loader": "^4.0.1",
     "stream-browserify": "^3.0.0",
     "style-loader": "^3.3.3",
-    "vscode": "^1.1.34",
+    "vscode": "^1.1.37",
     "watch": "^1.0.2",
     "websocket": "^1.0.34",
     "websocketserver": "^1.0.0",
