@@ -48,7 +48,7 @@ const App = () => {
     React.useEffect(() => {
         if (paired) {
             window.addEventListener("beforeunload", () => {  
-                endSession();
+                endSession(userId);
             });
         }
     }, [paired])
