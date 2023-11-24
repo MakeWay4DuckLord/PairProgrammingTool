@@ -2,14 +2,19 @@ import * as React from 'react';
 import PiChart from './PiChart';
 import Accordion from './Accordion'
 import styles from '../styles/Session.module.css'
+import { getUserId, getPartnerId, closeSession } from '../client'
 
 const Session = ({onSwitch}) => {  
+    const [userId, setUserId] = React.useState(getUserId());
+    const [partnerId, setPartnerId] = React.useState(getPartnerId());
     const [codeMessage, setCodeMessage] = React.useState("You're contributing evenly! Keep up the great work.");
     const [interruptions, setInterruptions] = React.useState(0);
 
     const endSession = () => {
+        closeSession();
         onSwitch('end');
     }
+    
     return (
         <div className={styles.SessionContainer}>
             <h1>Your Collaboration Metrics</h1>

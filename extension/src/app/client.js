@@ -12,6 +12,7 @@ export const registerId = (id, setPage) => {
   if (!idRegistered) {
     // wait for connection to establish
     ws.onopen = () => {
+      extensionId = id;
       // register ID
       ws.send(JSON.stringify({ action: "extensionId", eid: id }));
       extensionId = id;
@@ -30,7 +31,7 @@ export const registerId = (id, setPage) => {
           })
         // else, error or start
         } else if (JSON.parse(event.data).action === 'start') {
-          partnerId = JSON.parse(event.data).partnerId;
+          partnerId = JSON.parse(event.data).partnerID;
         } else if (JSON.parse(event.data).action === 'keepalive') {
           sleep(10000).then(() => {
             ws.send(JSON.stringify({action: "keepalive", id: id}));
@@ -46,6 +47,12 @@ export const registerId = (id, setPage) => {
 export const createPair = (id, partnerId, setMessage) => {
   ws.send(JSON.stringify({
     action: "pair", id1: id, id2: partnerId
+  }));
+}
+
+export const closeSession = () => {
+  ws.send(JSON.stringify({
+    action: "close", eid: extensionId, id: userId
   }));
 }
 

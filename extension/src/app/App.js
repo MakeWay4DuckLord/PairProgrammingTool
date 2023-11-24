@@ -13,17 +13,19 @@ const App = () => {
   const [count, setCount] = React.useState(0);
   const [number, setNumber] = React.useState(0);
   // Register our extension ID
-  registerId(extensionID);
+  registerId(extensionID, setPage);
 
   React.useEffect(() => {
     // Attempt to get the userID that is paired with the extension ID
     if (!userId && getUserId()) {
       setUserId(getUserId());
-      setNumber(number + 1);
+      setTimeout(() => {
+        setNumber(number + 1);
+      }, 100)
     } else {
       setTimeout(() => {
         setCount(count + 1);
-      }, 1000)
+      }, 500)
     }
   }, [count])
 
@@ -35,13 +37,12 @@ const App = () => {
     } else if (userId) {
       setTimeout(() => {
         setNumber(number + 1);
-      }, 1000)
+      }, 500)
     }
   }, [number])
 
   return (
     <div className={styles.App}>
-      {userId && <h1>{userId}</h1>}
       {page === '' && <a href={url}><button>Create New Session</button></a>}
       {page === 'start' && <Session onSwitch={setPage}/>}
       {page === 'end' && <EndSession onSwitch={setPage} />}
