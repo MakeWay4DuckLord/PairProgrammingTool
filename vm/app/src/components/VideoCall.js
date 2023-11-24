@@ -8,7 +8,7 @@ import cx from 'classnames';
 import Emotions from './Emotions';
 import axios from 'axios';
 
-const VideoCall=({userId, partnerId, stream, caller})=> {  
+const VideoCall=({userId, partnerId, stream, caller, active})=> {  
     const partnerVideoRef = React.useRef(null);
     const videoRef = React.useRef(null);
     const [muted, setMuted] = React.useState(false);
