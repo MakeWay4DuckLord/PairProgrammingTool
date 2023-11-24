@@ -4,6 +4,7 @@ const websocketRouter = express.Router();
 let clients = new Set();
 let extensions = new Set();
 var userIDs = [];
+var userPairs = {};
 var pairings = {};
 var connections = {};
 var extensionIDs = [];
@@ -25,16 +26,23 @@ websocketRouter.ws('/extension/ws', (ws, req) => {
         console.log("Said hello");
         break;
       case "extensionId":
-        let extensionId = message.eID;
+        let extensionId = message.eid;
         if (extensionConnections[extensionId] === undefined) {
           extensionConnections[extensionId] = [ws];
+          console.log("WS Registered!")
         }
         if (!(extensionId in extensionIDs)) {
           extensionIDs.push(extensionId);
         }
-        sendPacket(ws, { action: "registered1", id: extensionId });
+        sendPacket(ws, { action: "registered", id: extensionId });
         if (extensionPairs[extensionId] !== undefined) {
           sendPacket(ws, { action: "paired", id: extensionPairs[extensionId]});
+          if (extensionPairs[extensionId] in pairings) {
+            var partnerId = pairings[extensionPairs[extensionId]];
+            sendPacket(ws, { action: "start", partnerID: partnerId});
+          } else {
+            sendPacket(ws, { action: "error"});
+          }
         }
         break;
       case "keepalive":
@@ -71,8 +79,9 @@ websocketRouter.ws('/ws', (ws, req) => {
         } else {
           userIDs.push(id);
           extensionPairs[eid] = id;
+          userPairs[id] = eid;
           sendPacket(ws, {action: "registered", id: id});
-
+          // Send the userID to the extension
           let pairedExtension = Object.keys(extensionPairs).find(key => extensionPairs[key] === id);
           if (pairedExtension !== undefined && extensionConnections[pairedExtension] !== undefined) {
             extensionConnections[pairedExtension].forEach((ws) => {
@@ -92,10 +101,22 @@ websocketRouter.ws('/ws', (ws, req) => {
           sendPacket(ws, {action: "start", partner: message.id2});
           // sendPacket()
               
+          // send 
           if (!(connections[message.id2] === undefined)) {
             connections[message.id2].forEach((ws) => {
               sendPacket(ws, {action: "start", partner: message.id1});
+              if (extensionConnections[userPairs[message.id2]] !== undefined) {
+                extensionConnections[userPairs[message.id2]].forEach((ws) => {
+                  sendPacket(ws, { action: "start", partnerID: message.id1});
+                })
+              }
             })
+            var partnerId = message.id2;
+            if (extensionConnections[userPairs[message.id1]] !== undefined) {
+              extensionConnections[userPairs[message.id1]].forEach((ws) => {
+                sendPacket(ws, { action: "start", partnerID: partnerId});
+              })
+            }
           }
                 
         } else {
@@ -129,7 +150,7 @@ websocketRouter.ws('/ws', (ws, req) => {
         if (!(extensionId in extensionIDs)) {
           extenionIDs.push(extensionId);
         }
-        sendPacket(ws, { action: "registered1", id: extensionId });
+        sendPacket(ws, { action: "registered", id: extensionId });
         if (extensionPairs[extensionId] !== undefined) {
           sendPacket(ws, { action: "paired", id: extensionPairs[extensionId]});
         } 
@@ -157,7 +178,6 @@ function sendPacket(ws, data) {
 }
 
 function pair(uid1, uid2) {
-
   let validPair = true;
   let msg = "";
   if (uid1 in pairings || uid2 in pairings) {

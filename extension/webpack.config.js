@@ -4,8 +4,7 @@
 
 // used for joining directory with src path
 const path = require('path');
-
-
+const Dotenv = require('dotenv-webpack');
 
 // export a configuration for the index.jsx file on the web server
 module.exports = [
@@ -63,6 +62,7 @@ module.exports = [
       port: 8080,
       // get rids of the repeated header error
       allowedHosts: 'all'
-    }
+    },
+    plugins: [ new Dotenv() ]
   }
 ];

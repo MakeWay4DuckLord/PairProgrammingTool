@@ -1,5 +1,4 @@
 const vscode = require('vscode');
-const axios = require('axios');
 
 var ws;
 const extensionID = generateEID();

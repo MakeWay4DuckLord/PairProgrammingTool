@@ -27,8 +27,8 @@ const VideoCall=({userId, partnerId, stream, caller})=> {
         }
         //establish connection to signalling server
         const peer = new Peer(userId, {
-            host: 'sd-vm01.csc.ncsu.edu',
-            path: "/webrtc/myapp"
+            host: process.env.REACT_APP_PEER_HOST,
+            path: process.env.REACT_APP_PEER_PATH
         });
 
         //once connection is established, log id and send a message to peer for debugging
@@ -64,7 +64,7 @@ const VideoCall=({userId, partnerId, stream, caller})=> {
     React.useEffect(() => {
         const fetchData = async () => {
             try {
-                await axios.post(`https://sd-vm01.csc.ncsu.edu/server/api/sessions/${userId}/${partnerId}`);
+                await axios.post(`${process.env.REACT_APP_API_URL}/sessions/${userId}/${partnerId}`);
                 setIsInDatabase(true);
             } catch (error) {
                 console.log(error);
