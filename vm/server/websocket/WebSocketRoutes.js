@@ -55,13 +55,17 @@ websocketRouter.ws('/extension/ws', (ws, req) => {
         console.log("close");
         sessionStatus[message.eid] = 'CLOSED';
         // send to app
-        connections[message.id].forEach((ws) => {
-          sendPacket(ws, {action: "close"});
-        })
+        if (connections[message.id]) {
+          connections[message.id].forEach((ws) => {
+            sendPacket(ws, {action: "close"});
+          })
+        }
         // send to partner
-        connections[pairings[message.id]].forEach((ws) => {
-          sendPacket(ws, {action: "close"});
-        })
+        if (connections[pairings[message.id]]) {
+          connections[pairings[message.id]].forEach((ws) => {
+            sendPacket(ws, {action: "close"});
+          })
+        }
         // send to partner's extension 
         sessionStatus[userPairs[pairings[message.id]]] = 'CLOSED';
         if (extensionConnections[userPairs[pairings[message.id]]] !== undefined) {
