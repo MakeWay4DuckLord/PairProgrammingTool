@@ -69,15 +69,7 @@ websocketRouter.ws('/extension/ws', (ws, req) => {
           })
         }
       case "clear":
-        let pairedExtension = Object.keys(extensionPairs).find(key => extensionPairs[key] === message.id);
-        delete connections[message.id];
-        extensions.delete(extensionConnections[pairedExtension]);
-        delete extensionConnections[pairedExtension];
-        userIDs.splice(userIDs.indexOf(message.id), 1);
-        extensionIDs.splice(extensionID.indexOf(pairedExtension), 1);
-        delete pairings[message.id];
-        delete extensionPairs[pairedExtension];
-        clients.delete(ws);
+        
     }
   });
 })
