@@ -2,27 +2,21 @@ import React, { useState, useEffect, useRef } from 'react';
 import emotions from './Constants';
 import axios from 'axios';
 import styles from '../styles/Emotion.module.css'
+import ReconnectingWebSocket from 'reconnecting-websocket';
 
-const API_KEY = `545WFZ9GWUaMHHffmHZuBlqW5AtwsBFnpdPEUKjnTF86GWsV`; // Replace with your actual API key
-const endpoint = 'wss://api.hume.ai/v0/stream/models';
+const API_KEY = process.env.REACT_APP_HUME_API_KEY; // Replace with your actual API key
+const endpoint = process.env.REACT_APP_HUME_ENDPOINT;
 
 const score_interval = 5000 // calculate score every five minute (300000)
 const emotion_interval = 500 // get an emotion response every half second 
 
-const Emotions = ({ videoStream, id }) => {
+const Emotions = React.forwardRef(({ videoStream, id}, ref) => {
   const [emotion, setEmotion] = useState('');
   const [socket, setSocket] = useState(null);
   const [numOfRequests, setNumOfRequests] = useState(0)
-  const videoRef = useRef(null);
 
   function initializeWebSocket() {
-    const newSocket = new WebSocket(`${endpoint}?apiKey=${encodeURIComponent(API_KEY)}`);
-    newSocket.onclose = (event) => {
-      console.log('WebSocket connection closed:', event);
-      // Attempt to reconnect after a delay (e.g., 3 seconds)
-      setTimeout(initializeWebSocket, 3000);
-    };
-  
+    const newSocket = new ReconnectingWebSocket(`${endpoint}?apiKey=${encodeURIComponent(API_KEY)}`);
     return newSocket;
   }
   
@@ -31,7 +25,6 @@ const Emotions = ({ videoStream, id }) => {
     setSocket(newSocket);
   
     return () => {
-      // Close the WebSocket connection when the component unmounts
       if (newSocket) {
         newSocket.close();
       }
@@ -42,13 +35,8 @@ const Emotions = ({ videoStream, id }) => {
   useEffect(() => {
     // Handle WebSocket events when the socket is set
     if (socket) {
-      if (socket.readyState === WebSocket.CLOSED) {
-        // The WebSocket is closed; attempt to reopen it
-        const newSocket = initializeWebSocket();
-        setSocket(newSocket);
-      }
 
-      const video = videoRef.current;
+      const video = ref.current;
 
       // Capture frames from the video stream and send them to the WebSocket server
       const captureAndSendFrame = async () => {
@@ -65,20 +53,11 @@ const Emotions = ({ videoStream, id }) => {
           data: imageData,
         };
 
-        if (socket.readyState == WebSocket.OPEN) {
           socket.send(JSON.stringify(message));
-        
-        }
+	      
       };
 
-      video.addEventListener('play', () => {
-        // Start capturing and sending frames when the video starts playing
-        const captureInterval = setInterval(captureAndSendFrame, emotion_interval); // Adjust the capture interval as needed
-        video.addEventListener('pause', () => {
-          // Stop capturing frames when the video pauses or is no longer visible
-          clearInterval(captureInterval);
-        });
-      });
+      const captureInterval = setInterval(captureAndSendFrame, emotion_interval);
 
       socket.onerror = (error) => {
         console.error('WebSocket error:', error);
@@ -92,7 +71,6 @@ const Emotions = ({ videoStream, id }) => {
         const receivedMessage = JSON.parse(event.data);
         if (receivedMessage && receivedMessage.face && receivedMessage.face.predictions) {
           const emotionsArray = receivedMessage.face.predictions[0].emotions;
-          console.log("gets emotions");
           if (emotionsArray && emotionsArray.length > 0) {
             let maxEmotion = emotionsArray[0];
             for (let i = 1; i < emotionsArray.length; i++) {
@@ -112,39 +90,45 @@ const Emotions = ({ videoStream, id }) => {
   useEffect(() => {
     var score = 0;
     var tempScore = emotions[emotion];
-    if (tempScore !== undefined && tempScore !== null && score !== NaN ) {
-      var newScore = ((score + tempScore)/ numOfRequests);
+    
+    if (tempScore !== undefined && tempScore !== null && !isNaN(score)) {
+      var newScore = ((score + tempScore) / numOfRequests);
       score = newScore;
     }
-    console.log("nor " + numOfRequests);
-    if (numOfRequests >= (score_interval / emotion_interval)){
-      console.log("sends data");
-      axios.put(`https://sd-vm01.csc.ncsu.edu/server/api/users/${id}/expressionScore/${score}`)
+  
+    if (numOfRequests >= (score_interval / emotion_interval)) {
+      try {
+        axios.put(`https://sd-vm01.csc.ncsu.edu/server/api/users/${id}/expressionScore/${score}`)
+          .then(() => {
+            // Handle success if needed
+          })
+          .catch((error) => {
+            console.error("Error in axios.put:", error);
+          });
+      } catch (error) {
+        console.error("Error in axios.put:", error);
+      }
       score = 0;
       setNumOfRequests(0);
     }
-
-  }, [emotion, numOfRequests, id])
+  }, [emotion, numOfRequests, id]);
+  
 
   useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.srcObject = videoStream;
+    if (ref.current) {
+      ref.current.srcObject = videoStream;
     }
   }, [videoStream]);
 
   return (
     <div>
-      <video className={styles.video} ref={videoRef} muted={true} width={640} height={360} autoPlay />
       <div className={styles.emotion}>
         <p>{emotion}</p>
       </div>
     </div>
   );
-};
+  
+
+});
 
 export default Emotions;
-
-
-
-
-
