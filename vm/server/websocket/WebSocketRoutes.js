@@ -27,11 +27,11 @@ websocketRouter.ws('/extension/ws', (ws, req) => {
         break;
       case "extensionId":
         let extensionId = message.eid;
-        console.log(extensionId);
         if (extensionConnections[extensionId] === undefined) {
           extensionConnections[extensionId] = [ws];
         } else if (!extensionConnections[extensionId].contains(ws)) {
           extensionConnections[extensionId].push(ws);
+          console.log(extensionConnections[extensionId].size);
         }
         if (!(extensionId in extensionIDs)) {
           extensionIDs.push(extensionId);
