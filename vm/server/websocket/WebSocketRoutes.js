@@ -181,9 +181,11 @@ websocketRouter.ws('/ws', (ws, req) => {
         break;
       case "close":
         // Send to partner
-        connections[pairings[message.id]].forEach((ws) => {
-          sendPacket(ws, {action: "close"});
-        });
+        if (connections[pairings[message.id]]) {
+          connections[pairings[message.id]].forEach((ws) => {
+            sendPacket(ws, {action: "close"});
+          });
+        }
         // Send to extension
         sessionStatus[message.eid] = 'CLOSED';
         if (extensionConnections[message.eid]) {
