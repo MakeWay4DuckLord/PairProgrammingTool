@@ -26,8 +26,8 @@ websocketRouter.ws('/extension/ws', (ws, req) => {
         console.log("Said hello");
         break;
       case "extensionId":
-        console.log(extensionId);
         let extensionId = message.eid;
+        console.log(extensionId);
         if (extensionConnections[extensionId] === undefined) {
           extensionConnections[extensionId] = [ws];
         } else if (!extensionConnections[extensionId].contains(ws)) {
