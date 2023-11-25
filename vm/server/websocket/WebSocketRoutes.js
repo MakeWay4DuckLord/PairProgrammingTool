@@ -31,7 +31,7 @@ websocketRouter.ws('/extension/ws', (ws, req) => {
         if (extensionConnections[extensionId] === undefined) {
           extensionConnections[extensionId] = [ws];
         } else if (!extensionConnections[extensionId].contains(ws)) {
-          extensionConnections.push(ws);
+          extensionConnections[extensionId].push(ws);
         }
         if (!(extensionId in extensionIDs)) {
           extensionIDs.push(extensionId);
