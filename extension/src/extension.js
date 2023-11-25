@@ -4,6 +4,7 @@ var ws;
 const extensionID = generateEID();
 var appID;
 var lineNum;
+var active;
 // var orange = vscode.window.createOutputChannel("Orange"); // Creates an output tab named orange
 // orange.show();
 
@@ -22,7 +23,7 @@ function generateEID() {
 
 function connect(ws) {
 	try {
-		ws = new WebSocket(`wss://sd-vm01.csc.ncsu.edu/server/extension/ws`);
+		ws = new WebSocket(`ws://localhost/server/extension/ws`);
 		return ws;
 	} catch (e) {
 		// orange.appendLine(e.message);
@@ -35,21 +36,24 @@ function activate(context) {
 	const provider = new SessionWebviewViewProvider(context.extensionUri);
 	context.subscriptions.push(vscode.window.registerWebviewViewProvider(provider.viewType, provider));
 
-	currentLines = vscode.window.activeTextEditor.document.lineCount;
+	if (vscode.window.activeTextEditor) {
+		currentLines = vscode.window.activeTextEditor.document.lineCount;
+	} else {
+		currentLines = 0;
+	}
 
 	ws = connect(ws);
 
 	ws.onopen = () => {
-
 		ws.addEventListener("message", (event) => {
 			let msg = JSON.parse(event.data);
 			// orange.appendLine(msg);
 			switch (msg.action) {
 				case "hello":
 					ws.send(JSON.stringify({action: "hello"}));
-					ws.send(JSON.stringify({action: "extensionId", eID: extensionID }));
+					ws.send(JSON.stringify({action: "extensionId", eid: extensionID }));
 					break;
-				case "registered1":
+				case "registered":
 					// orange.appendLine("Registered with server: " + msg.id);
 					sleep(10000).then(() => {
 						ws.send(JSON.stringify({ action: "keepalive" }));
@@ -57,8 +61,37 @@ function activate(context) {
 					break;
 				case "paired":
 					// orange.appendLine("Paired id: " + msg.id);
+					if (!appID) {
+						lineNum = 0;
+						if (vscode.window.activeTextEditor) {
+							currentLines = vscode.window.activeTextEditor.document.lineCount;
+						} else {
+							currentLines = 0;
+						}
+					}
 					appID = msg.id;
 					break;
+				case "start":
+					if (!active) {
+						lineNum = 0;
+						if (vscode.window.activeTextEditor) {
+							currentLines = vscode.window.activeTextEditor.document.lineCount;
+						} else {
+							currentLines = 0;
+						}
+					}
+					active = true;
+				case "close":
+					if (vscode.window.activeTextEditor) {
+						newLines = vscode.window.activeTextEditor.document.lineCount;
+						lineNum += newLines - currentLines;
+						currentLines = newLines;
+						if (appID && active) {
+							ws.send(JSON.stringify({action: "loc", id: appID, count: lineNum}));
+							active = false;
+							appID = null;
+						}
+					}
 				case "keepalive":
 					sleep(10000).then(() => {
 						ws.send(JSON.stringify({ action: "keepalive", eid: extensionID}));
@@ -77,10 +110,11 @@ function activate(context) {
 		newLines = vscode.window.activeTextEditor.document.lineCount;
 		lineNum += newLines - currentLines;
 		currentLines = newLines;
-		// axios.put(`https://sd-vm01.csc.ncsu.edu/server/api/users/${appID}/linesOfCode/${lineNum}`);
+		if (appID && active) {
+			ws.send(JSON.stringify({action: "loc", id: appID, count: lineNum}));
+		}
 		// orange.appendLine("Saving: " + lineNum);
 	})
-
 
 }
 

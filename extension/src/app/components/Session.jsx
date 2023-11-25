@@ -2,6 +2,7 @@ import * as React from 'react';
 import PiChart from './PiChart';
 import Accordion from './Accordion'
 import styles from '../styles/Session.module.css'
+import axios from 'axios';
 import { getUserId, getPartnerId, closeSession } from '../client'
 
 const Session = ({onSwitch}) => {  
@@ -9,6 +10,35 @@ const Session = ({onSwitch}) => {
     const [partnerId, setPartnerId] = React.useState(getPartnerId());
     const [codeMessage, setCodeMessage] = React.useState("You're contributing evenly! Keep up the great work.");
     const [interruptions, setInterruptions] = React.useState(0);
+    const [linesOfCode, setLinesOfCode] = React.useState(0);
+    const [count, setCount] = React.useState(0);
+    const [partnerLinesOfCode, setPartnerLinesOfCode] = React.useState(0);
+
+    React.useEffect(() => {
+        if (userId && partnerId) {
+            axios.get(`${process.env.REACT_APP_WEBPAGE_URL}/server/api/users/${userId}`).then((body) => {
+                setLinesOfCode(body.data.lines_of_code);
+                setTimeout(() => {
+                    setCount(count + 1);
+                }, 500)
+            }, () => {
+                setTimeout(() => {
+                    setCount(count + 1);
+                }, 500)
+            })
+            axios.get(`${process.env.REACT_APP_WEBPAGE_URL}/server/api/users/${partnerId}`).then((body) => {
+                setPartnerLinesOfCode(body.data.lines_of_code);
+            }, () => {
+                //
+            })
+            axios.get(`${process.env.REACT_APP_WEBPAGE_URL}/server/api/utterances/interruptions/${userId}/${partnerId}`).then((body) => {
+                setInterruptions(body.data);
+                console.log(body.data);
+            }, () => {
+                //
+            })
+        }
+    }, [count])
 
     const endSession = () => {
         closeSession();
@@ -26,7 +56,7 @@ const Session = ({onSwitch}) => {
                     subject1="Your Lines of Code" 
                     subject2="Your Partner's Lines of Code" 
                     metric="Lines of Code" 
-                    val1={10} val2={20} />
+                    val1={linesOfCode} val2={partnerLinesOfCode} />
                     <p>{codeMessage}</p>
                 </div>}
                 

@@ -1,4 +1,5 @@
 const express = require('express');
+const axios = require('axios');
 const websocketRouter = express.Router();
 
 let clients = new Set();
@@ -29,9 +30,8 @@ websocketRouter.ws('/extension/ws', (ws, req) => {
         let extensionId = message.eid;
         if (extensionConnections[extensionId] === undefined) {
           extensionConnections[extensionId] = [ws];
-        } else if (!extensionConnections[extensionId].contains(ws)) {
-          extensionConnections[extensionId].push(ws);
-          console.log(extensionConnections[extensionId].size);
+        } else if (extensionConnections[extensionId].length < 2) {
+          extensionConnections[extensionId][1] = ws;
         }
         if (!(extensionId in extensionIDs)) {
           extensionIDs.push(extensionId);
@@ -74,13 +74,41 @@ websocketRouter.ws('/extension/ws', (ws, req) => {
             sendPacket(ws, {action: "close", id: pairings[message.id], partnerId: message.id});
           })
         }
+
+        // send to self (for LOC)
+        if (extensionConnections[message.eid] !== undefined) {
+          extensionConnections[message.eid].forEach((ws) => {
+            sendPacket(ws, {action: "close", id: message.id, partnerId: pairings[message.id]});
+          })
+        }
         break;
+      case "loc":
+        var lineCount = message.count;
+        var id = message.id;
+        axios.put(`${process.env.API_URL}/users/${id}/linesOfCode/${lineCount}`).catch((err) => {
+          console.log(err);
+        })
+        break; 
       case "clear":
-        
+        var eid = message.eid;
+        var id = message.id;
+        // Clear user (app) information
+        delete userIDs[id];
+        delete sessionStatus[userPairs[pairings[id]]];
+        delete userPairs[id];
+        delete pairings[id];
+        clients.delete(connections[id]);
+        delete connections[id];
+        // Clear extension information
+        extensions.delete(ws);
+        delete extensionIDs[eid];
+        delete extensionPairs[eid];
+        delete extensionConnections[eid];
+        // Check if other extension is gone (+ clear any other information)
+        break;
     }
   });
 })
-
 
 websocketRouter.ws('/ws', (ws, req) => {
   clients.add(ws);
@@ -188,9 +216,6 @@ websocketRouter.ws('/ws', (ws, req) => {
           sendPacket(ws, { action: "paired", id: extensionPairs[extensionId]});
         } 
         break;
-      case "loc":
-        console.log("The user typed " + msg.count + "words.");
-        break;
       default:
         console.log("WS: idk man");
     }
@@ -228,6 +253,5 @@ function pair(uid1, uid2) {
   }
   return { 'worked': validPair, 'message': msg };
 }
-
 
 module.exports = websocketRouter;

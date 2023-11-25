@@ -1,12 +1,14 @@
 import * as React from 'react';
 import PiChart from './PiChart';
-import Accordion from './Accordion'
-import styles from '../styles/EndSession.module.css'
-import Score from './Score'
+import Accordion from './Accordion';
+import { clearSession } from '../client';
+import styles from '../styles/EndSession.module.css';
+import Score from './Score';
 
 const EndSession = ({onSwitch}) => {  
     const [score, setScore] = React.useState(10);
     const completeSession = () => {
+        clearSession();
         onSwitch('');
     }
     return (

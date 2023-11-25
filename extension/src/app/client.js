@@ -20,7 +20,6 @@ export const registerId = (id, setPage) => {
       ws.send(JSON.stringify({ action: "keepalive" }));
       // wait to see if ID is correctly registered
       ws.addEventListener("message", (event) => {
-        console.log(JSON.parse(event.data));
         // id successfully registered
         if (JSON.parse(event.data).action === 'registered') {
           idRegistered = true;
@@ -38,6 +37,10 @@ export const registerId = (id, setPage) => {
           })
         } else if (JSON.parse(event.data).action === 'paired') {
           userId = JSON.parse(event.data).id;
+        } else if (JSON.parse(event.data).action === 'close') {
+          userId = JSON.parse(event.data).id;
+          partnerId = JSON.parse(event.data).partnerId;
+          setPage('end');
         }
       });
     }
@@ -53,6 +56,12 @@ export const createPair = (id, partnerId, setMessage) => {
 export const closeSession = () => {
   ws.send(JSON.stringify({
     action: "close", eid: extensionId, id: userId
+  }));
+}
+
+export const clearSession = () => {
+  ws.send(JSON.stringify({
+    action: "clear", eid: extensionId, id: userId
   }));
 }
 
