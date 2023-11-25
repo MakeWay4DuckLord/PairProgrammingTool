@@ -31,11 +31,11 @@ websocketRouter.ws('/extension/ws', (ws, req) => {
           extensionConnections[extensionId] = [ws];
         }
         if (!(extensionId in extensionIDs)) {
-          sessionStatus[extensionId] = 'ACTIVE';
           extensionIDs.push(extensionId);
         }
         sendPacket(ws, { action: "registered", id: extensionId });
         if (extensionPairs[extensionId] !== undefined && sessionStatus[extensionId] !== 'CLOSED') {
+          sessionStatus[extensionId] = 'ACTIVE';
           sendPacket(ws, { action: "paired", id: extensionPairs[extensionId]});
           if (extensionPairs[extensionId] in pairings) {
             var partnerId = pairings[extensionPairs[extensionId]];

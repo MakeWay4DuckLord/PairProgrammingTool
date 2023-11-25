@@ -28,7 +28,8 @@ const VideoCall=({userId, partnerId, stream, caller, active})=> {
         //establish connection to signalling server
         const peer = new Peer(userId, {
             host: process.env.REACT_APP_PEER_HOST,
-            path: process.env.REACT_APP_PEER_PATH
+            path: process.env.REACT_APP_PEER_PATH,
+            port: 80
         });
 
         //once connection is established, log id and send a message to peer for debugging
