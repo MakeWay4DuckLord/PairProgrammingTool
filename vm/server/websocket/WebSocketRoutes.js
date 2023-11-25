@@ -40,19 +40,17 @@ websocketRouter.ws('/extension/ws', (ws, req) => {
           if (extensionPairs[extensionId] in pairings) {
             var partnerId = pairings[extensionPairs[extensionId]];
             sendPacket(ws, { action: "start", partnerID: partnerId});
-          } else {
-            sendPacket(ws, { action: "error"});
-          }
-        } else {
+          } 
+        } else if (extensionPairs[extensionId] !== undefined && sessionStatus[extensionId] === 'CLOSED') {
+          var partnerId = pairings[extensionPairs[extensionId]];
           sendPacket(ws, { action: "paired", id: extensionPairs[extensionId]});
-          sendPacket(ws, { action: "close", partnerID: partnerId});
+          sendPacket(ws, { action: "close", partnerID: partnerId, id: extensionPairs[extensionId]});
         }
         break;
       case "keepalive":
         sendPacket(ws, {action: "keepalive"});
         break;
       case "close":
-        console.log("close");
         sessionStatus[message.eid] = 'CLOSED';
         // send to app
         if (connections[message.id]) {
