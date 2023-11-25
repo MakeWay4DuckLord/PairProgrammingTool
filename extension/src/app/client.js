@@ -20,6 +20,7 @@ export const registerId = (id, setPage) => {
       ws.send(JSON.stringify({ action: "keepalive" }));
       // wait to see if ID is correctly registered
       ws.addEventListener("message", (event) => {
+        console.log(event.data);
         // id successfully registered
         if (JSON.parse(event.data).action === 'registered') {
           idRegistered = true;
@@ -63,6 +64,11 @@ export const clearSession = () => {
   ws.send(JSON.stringify({
     action: "clear", eid: extensionId, id: userId
   }));
+  // Reset
+  userId = null;
+  partnerId = null;
+  ws.send(JSON.stringify({ action: "extensionId", eid: extensionId }));
+  extensionId = null;
 }
 
 export const getUserId = () => {

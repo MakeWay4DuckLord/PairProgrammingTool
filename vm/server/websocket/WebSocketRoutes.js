@@ -2,8 +2,6 @@ const express = require('express');
 const axios = require('axios');
 const websocketRouter = express.Router();
 
-let clients = new Set();
-let extensions = new Set();
 var userIDs = [];
 var userPairs = {};
 var pairings = {};
@@ -17,7 +15,6 @@ var sessionStatus = {};
 * WEBSOCKET ROUTES *
 \******************/
 websocketRouter.ws('/extension/ws', (ws, req) => {
-  extensions.add(ws);
   sendPacket(ws, {action: "hello"});
   ws.on('message', (msg) => {
     const message = JSON.parse(msg);
@@ -93,15 +90,17 @@ websocketRouter.ws('/extension/ws', (ws, req) => {
         var eid = message.eid;
         var id = message.id;
         // Clear user (app) information
-        delete userIDs[id];
-        delete sessionStatus[userPairs[pairings[id]]];
+        if (userIDs.indexOf(id) >= 0) {
+          userIDs.splice(userIDs.indexOf(id), 1);
+        }
+        delete sessionStatus[eid];
         delete userPairs[id];
         delete pairings[id];
-        clients.delete(connections[id]);
         delete connections[id];
         // Clear extension information
-        extensions.delete(ws);
-        delete extensionIDs[eid];
+        if (extensionIDs.indexOf(eid) >= 0) {
+          extensionIDs.splice(extensionIDs.indexOf(eid), 1);
+        }
         delete extensionPairs[eid];
         delete extensionConnections[eid];
         // Check if other extension is gone (+ clear any other information)
@@ -111,8 +110,6 @@ websocketRouter.ws('/extension/ws', (ws, req) => {
 })
 
 websocketRouter.ws('/ws', (ws, req) => {
-  clients.add(ws);
-  console.log('New client');
   sendPacket(ws, {action: "hello"});
   ws.on('message', (msg) => {
     const message = JSON.parse(msg);
@@ -226,7 +223,6 @@ websocketRouter.ws('/ws', (ws, req) => {
 
   ws.on('close', e => {
     // closed(ws);
-    clients.delete(ws);
     console.log('client closed');
   });
 

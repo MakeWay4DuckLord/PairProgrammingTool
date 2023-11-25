@@ -3,12 +3,12 @@ import PiChart from './PiChart';
 import Accordion from './Accordion'
 import styles from '../styles/Session.module.css'
 import axios from 'axios';
+import cx from 'classnames'
 import { getUserId, getPartnerId, closeSession } from '../client'
 
 const Session = ({onSwitch}) => {  
-    const [userId, setUserId] = React.useState(getUserId());
-    const [partnerId, setPartnerId] = React.useState(getPartnerId());
-    const [codeMessage, setCodeMessage] = React.useState("You're contributing evenly! Keep up the great work.");
+    const [userId] = React.useState(getUserId());
+    const [partnerId] = React.useState(getPartnerId());
     const [interruptions, setInterruptions] = React.useState(0);
     const [linesOfCode, setLinesOfCode] = React.useState(0);
     const [count, setCount] = React.useState(0);
@@ -33,7 +33,6 @@ const Session = ({onSwitch}) => {
             })
             axios.get(`${process.env.REACT_APP_WEBPAGE_URL}/server/api/utterances/interruptions/${userId}/${partnerId}`).then((body) => {
                 setInterruptions(body.data);
-                console.log(body.data);
             }, () => {
                 //
             })
@@ -44,6 +43,8 @@ const Session = ({onSwitch}) => {
         closeSession();
         onSwitch('end');
     }
+
+    const interruptionClassnames = cx({[styles.interruptions]:true, [styles.red]:interruptions > 10, [styles.green]:interruptions < 5, [styles.orange]:interruptions > 5});
     
     return (
         <div className={styles.SessionContainer}>
@@ -57,16 +58,15 @@ const Session = ({onSwitch}) => {
                     subject2="Your Partner's Lines of Code" 
                     metric="Lines of Code" 
                     val1={linesOfCode} val2={partnerLinesOfCode} />
-                    <p>{codeMessage}</p>
                 </div>}
                 
             />
             <Accordion title="Voice Activity" content={
-            <div>
-                <span className={styles.voice}>You've have interrupted your partner <p className={styles.interruptions}>{interruptions}</p> times!</span>
+            <div className={styles.text}>
+                <span className={styles.voice}>You've have interrupted your partner <p className={interruptionClassnames}>{interruptions}</p> times!</span>
             </div>
             } />
-            <button onClick={endSession}>End Session</button>
+            <button className={styles.end} onClick={endSession}>End Session</button>
         </div>
     );
 };

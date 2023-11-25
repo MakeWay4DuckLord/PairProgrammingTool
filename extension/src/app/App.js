@@ -16,6 +16,13 @@ const App = () => {
   registerId(extensionID, setPage);
 
   React.useEffect(() => {
+    if (page === '' && partnerId) {
+      setUserId(null);
+      setPartnerId(null);
+    }
+  }, [page])
+
+  React.useEffect(() => {
     // Attempt to get the userID that is paired with the extension ID
     if (!userId && getUserId()) {
       setUserId(getUserId());
@@ -32,8 +39,8 @@ const App = () => {
   React.useEffect(() => {
     // Attempt to get the userID that is paired with the extension ID
     if (userId && !partnerId && getPartnerId()) {
-      setPartnerId(getPartnerId());
       setPage('start');
+      setPartnerId(getPartnerId());
     } else if (userId) {
       setTimeout(() => {
         setNumber(number + 1);
