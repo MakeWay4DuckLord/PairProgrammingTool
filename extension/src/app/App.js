@@ -25,7 +25,7 @@ const App = () => {
     } else {
       setTimeout(() => {
         setCount(count + 1);
-      }, 5000)
+      }, 300)
     }
   }, [count])
 
@@ -37,7 +37,7 @@ const App = () => {
     } else if (userId) {
       setTimeout(() => {
         setNumber(number + 1);
-      }, 5000)
+      }, 300)
     }
   }, [number])
 
