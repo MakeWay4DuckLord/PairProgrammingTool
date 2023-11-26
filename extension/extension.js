@@ -3,7 +3,7 @@ const vscode = require('vscode');
 var ws;
 const extensionID = generateEID();
 var appID;
-var lineNum = 0;
+var lineNum;
 var active;
 // var orange = vscode.window.createOutputChannel("Orange"); // Creates an output tab named orange
 // orange.show();
@@ -23,7 +23,7 @@ function generateEID() {
 
 function connect(ws) {
 	try {
-		ws = new WebSocket(`wss://sd-vm01.csc.ncsu.edu/server/extension/ws`);
+		ws = new WebSocket(`ws://localhost/server/extension/ws`);
 		return ws;
 	} catch (e) {
 		// orange.appendLine(e.message);
@@ -33,6 +33,7 @@ function connect(ws) {
 var currentLines;
 // runs when extension starts
 function activate(context) {
+	// vscode.tasks.executeTask(vscode.tasks.fetchTasks())
 	const provider = new SessionWebviewViewProvider(context.extensionUri);
 	context.subscriptions.push(vscode.window.registerWebviewViewProvider(provider.viewType, provider));
 
@@ -81,7 +82,6 @@ function activate(context) {
 						}
 					}
 					active = true;
-					break;
 				case "close":
 					if (vscode.window.activeTextEditor) {
 						newLines = vscode.window.activeTextEditor.document.lineCount;
@@ -91,10 +91,8 @@ function activate(context) {
 							ws.send(JSON.stringify({action: "loc", id: appID, count: lineNum}));
 							active = false;
 							appID = null;
-							ws.send(JSON.stringify({action: "extensionId", eid: extensionID }));
 						}
 					}
-					break;
 				case "keepalive":
 					sleep(10000).then(() => {
 						ws.send(JSON.stringify({ action: "keepalive", eid: extensionID}));
@@ -153,7 +151,8 @@ class SessionWebviewViewProvider {
 	}
 
 	// Render webview using the HTML that would be in a React index.html file
-	getWebViewContent() {	
+	getWebViewContent(context) {	
+		const link = context.asWebviewUri(Uri.file(join(context.extensionPath, index.js))).toString();
         return `<!DOCTYPE html>
 		<html lang="en">
 		<head>
@@ -165,7 +164,7 @@ class SessionWebviewViewProvider {
 		<body>
 			<div id="root">
 			</div>
-			<script src="http://localhost:8080${'/index.js'}"></script>
+			<script src="http://localhost:8080/index.js"></script>
 		</body>
 		</html>`;
 	}

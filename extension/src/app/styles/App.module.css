@@ -16,3 +16,23 @@
 .App button:hover {
     background-color: var(--blue-hover);
 }
+
+.App a,
+.App a:link,
+.App a:hover,
+.App a:active,
+.App a:visited {
+    text-decoration: none;
+}
+
+.App a p {
+    color: var(--blue);
+    text-decoration: none;
+    width: 100%;
+    display: flex;
+    padding: 5px;
+}
+
+.App a span {
+    padding: 0 3px;
+}

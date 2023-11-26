@@ -177,6 +177,7 @@ websocketRouter.ws('/ws', (ws, req) => {
 
         break;
       case "close":
+        console.log("APP CLOSED!")
         // Send to partner
         if (connections[pairings[message.id]]) {
           connections[pairings[message.id]].forEach((ws) => {

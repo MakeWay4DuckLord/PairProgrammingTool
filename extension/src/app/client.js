@@ -9,15 +9,12 @@ var extensionId = null;
 var idRegistered = false;
 
 export const registerId = (id, setPage) => {
-  if (!idRegistered) {
     // wait for connection to establish
     ws.onopen = () => {
       extensionId = id;
-      // register ID
-      ws.send(JSON.stringify({ action: "extensionId", eid: id }));
-      extensionId = id;
       // keep alive
       ws.send(JSON.stringify({ action: "keepalive" }));
+      ws.send(JSON.stringify({ action: "extensionId", eid: id }));
       // wait to see if ID is correctly registered
       ws.addEventListener("message", (event) => {
         console.log(event.data);
@@ -25,11 +22,6 @@ export const registerId = (id, setPage) => {
         if (JSON.parse(event.data).action === 'registered') {
           idRegistered = true;
         // hello
-        } else if (JSON.parse(event.data).action === 'hello') {
-          sleep(10000).then(() => {
-            ws.send(JSON.stringify({action: "keepalive", id: id}));
-          })
-        // else, error or start
         } else if (JSON.parse(event.data).action === 'start') {
           partnerId = JSON.parse(event.data).partnerID;
         } else if (JSON.parse(event.data).action === 'keepalive') {
@@ -40,13 +32,12 @@ export const registerId = (id, setPage) => {
           userId = JSON.parse(event.data).id;
         } else if (JSON.parse(event.data).action === 'close') {
           userId = JSON.parse(event.data).id;
-          partnerId = JSON.parse(event.data).partnerId;
+          partnerId = JSON.parse(event.data).partnerID;
           setPage('end');
         }
       });
     }
   }
-}
 
 export const createPair = (id, partnerId, setMessage) => {
   ws.send(JSON.stringify({

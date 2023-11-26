@@ -32,13 +32,13 @@ const App = () => {
     } else {
       setTimeout(() => {
         setCount(count + 1);
-      }, 300)
+      }, 100)
     }
   }, [count])
 
   React.useEffect(() => {
     // Attempt to get the userID that is paired with the extension ID
-    if (userId && !partnerId && getPartnerId()) {
+    if (userId && !partnerId && getPartnerId() && page === '') {
       setPage('start');
       setPartnerId(getPartnerId());
     } else if (userId) {
@@ -50,7 +50,7 @@ const App = () => {
 
   return (
     <div className={styles.App}>
-      {page === '' && <a href={url}><button>Create New Session</button></a>}
+      {page === '' && <a href={url}><button>Create New Session</button><p>Or visit: <span> {url} </span></p></a>}
       {page === 'start' && <Session onSwitch={setPage}/>}
       {page === 'end' && <EndSession onSwitch={setPage} />}
     </div>

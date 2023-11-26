@@ -45,7 +45,6 @@ export const registerId = (id, setId, setAction, setPartnerId, setSessionActive)
             ws.send(JSON.stringify({action: "keepalive", id: id}));
           })
         } else if (JSON.parse(event.data).action === 'close') {
-          console.log(event.data);
           setSessionActive(false);
         }
       });
@@ -57,7 +56,7 @@ export const createPair = (id, partnerId, setMessage) => {
   ws.send(JSON.stringify({
     action: "pair", id1: id, id2: partnerId
   }));
-}
+} 
 
 export const endSession = (id) => {
   ws.send(JSON.stringify({

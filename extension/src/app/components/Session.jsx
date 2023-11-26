@@ -3,7 +3,7 @@ import PiChart from './PiChart';
 import Accordion from './Accordion'
 import styles from '../styles/Session.module.css'
 import axios from 'axios';
-import cx from 'classnames'
+import cx from 'classnames';
 import { getUserId, getPartnerId, closeSession } from '../client'
 
 const Session = ({onSwitch}) => {  
@@ -16,6 +16,7 @@ const Session = ({onSwitch}) => {
 
     React.useEffect(() => {
         if (userId && partnerId) {
+            console.log(interruptions);
             axios.get(`${process.env.REACT_APP_WEBPAGE_URL}/server/api/users/${userId}`).then((body) => {
                 setLinesOfCode(body.data.lines_of_code);
                 setTimeout(() => {
@@ -63,7 +64,7 @@ const Session = ({onSwitch}) => {
             />
             <Accordion title="Voice Activity" content={
             <div className={styles.text}>
-                <span className={styles.voice}>You've have interrupted your partner <p className={interruptionClassnames}>{interruptions}</p> times!</span>
+                <span className={styles.voice}>You have interrupted your partner <p className={interruptionClassnames}>{interruptions}</p> times!</span>
             </div>
             } />
             <button className={styles.end} onClick={endSession}>End Session</button>
