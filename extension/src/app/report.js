@@ -1,29 +1,33 @@
 import axios from 'axios';
 
 var Report = () => {
-
+    this.lines_of_code = 0,
+    this.partner_lines_of_code = 0,
+    this.interruptions = 0;
 }
+
+var FinalReport = new Report();
 
 export const getInterruptions = (userId, partnerId) => {
     axios.get(`${process.env.REACT_APP_WEBPAGE_URL}/server/api/utterances/interruptions/${userId}/${partnerId}`).then((body) => {
-        return body.data;
+        FinalReport.interruptions = body.data;
     }, () => {
-        return 0;
+        //
     })
 }
 
 export const getLinesOfCode = (userId) => {
     axios.get(`${process.env.REACT_APP_WEBPAGE_URL}/server/api/users/${userId}`).then((body) => {
-        return body.data.lines_of_code;
+        FinalReport.lines_of_code = body.data.lines_of_code;
     }, () => {
-        return 0;
+        //
     })
 }
 
 export const getPartnerLinesOfCode = (partnerId) => {
     axios.get(`${process.env.REACT_APP_WEBPAGE_URL}/server/api/users/${partnerId}`).then((body) => {
-        return body.data.lines_of_code;
+        FinalReport.partner_lines_of_code = body.data.lines_of_code;
     }, () => {
-        return 0;
+        //
     })
 }

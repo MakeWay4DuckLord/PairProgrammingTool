@@ -58,8 +58,10 @@ export const clearSession = () => {
   // Reset
   userId = null;
   partnerId = null;
-  ws.send(JSON.stringify({ action: "extensionId", eid: extensionId }));
   extensionId = null;
+  setTimeout(() => {
+    ws.send(JSON.stringify({ action: "extensionId", eid: extensionId }));
+  }, 100)
 }
 
 export const getUserId = () => {

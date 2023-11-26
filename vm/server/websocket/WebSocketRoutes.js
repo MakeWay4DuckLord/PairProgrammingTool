@@ -18,7 +18,6 @@ websocketRouter.ws('/extension/ws', (ws, req) => {
   sendPacket(ws, {action: "hello"});
   ws.on('message', (msg) => {
     const message = JSON.parse(msg);
-    console.log(message);
     switch (message.action) {
       case "hello":
         console.log("Said hello");
@@ -113,7 +112,6 @@ websocketRouter.ws('/ws', (ws, req) => {
   sendPacket(ws, {action: "hello"});
   ws.on('message', (msg) => {
     const message = JSON.parse(msg);
-    console.log(message);
     switch (message.action) {
       case "hello":
         console.log("Said hello");
@@ -177,7 +175,6 @@ websocketRouter.ws('/ws', (ws, req) => {
 
         break;
       case "close":
-        console.log("APP CLOSED!")
         // Send to partner
         if (connections[pairings[message.id]]) {
           connections[pairings[message.id]].forEach((ws) => {
@@ -216,8 +213,6 @@ websocketRouter.ws('/ws', (ws, req) => {
           sendPacket(ws, { action: "paired", id: extensionPairs[extensionId]});
         } 
         break;
-      default:
-        console.log("WS: idk man");
     }
   });
   
