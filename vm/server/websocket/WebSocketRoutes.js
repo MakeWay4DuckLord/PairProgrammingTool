@@ -1,59 +1,117 @@
 const express = require('express');
+const axios = require('axios');
 const websocketRouter = express.Router();
 
-let clients = new Set();
-let extensions = new Set();
 var userIDs = [];
+var userPairs = {};
 var pairings = {};
 var connections = {};
 var extensionIDs = [];
 var extensionPairs = {};
 var extensionConnections = {};
+var sessionStatus = {};
 
 /******************\
 * WEBSOCKET ROUTES *
 \******************/
 websocketRouter.ws('/extension/ws', (ws, req) => {
-  extensions.add(ws);
-  console.log('New Extension');
   sendPacket(ws, {action: "hello"});
   ws.on('message', (msg) => {
     const message = JSON.parse(msg);
-    console.log(message);
     switch (message.action) {
       case "hello":
         console.log("Said hello");
         break;
       case "extensionId":
-        let extensionId = message.eID;
+        let extensionId = message.eid;
         if (extensionConnections[extensionId] === undefined) {
           extensionConnections[extensionId] = [ws];
+        } else if (extensionConnections[extensionId].length < 2) {
+          extensionConnections[extensionId][1] = ws;
         }
         if (!(extensionId in extensionIDs)) {
           extensionIDs.push(extensionId);
         }
-        sendPacket(ws, { action: "registered1", id: extensionId });
-        if (extensionPairs[extensionId] !== undefined) {
+        sendPacket(ws, { action: "registered", id: extensionId });
+        if (extensionPairs[extensionId] !== undefined && sessionStatus[extensionId] !== 'CLOSED') {
+          sessionStatus[extensionId] = 'ACTIVE';
           sendPacket(ws, { action: "paired", id: extensionPairs[extensionId]});
+          if (extensionPairs[extensionId] in pairings) {
+            var partnerId = pairings[extensionPairs[extensionId]];
+            sendPacket(ws, { action: "start", partnerID: partnerId});
+          } 
+        } else if (extensionPairs[extensionId] !== undefined && sessionStatus[extensionId] === 'CLOSED') {
+          var partnerId = pairings[extensionPairs[extensionId]];
+          sendPacket(ws, { action: "paired", id: extensionPairs[extensionId]});
+          sendPacket(ws, { action: "close", partnerID: partnerId, id: extensionPairs[extensionId]});
         }
         break;
       case "keepalive":
         sendPacket(ws, {action: "keepalive"});
         break;
-      default:
-        console.log("WS: idk man");
+      case "close":
+        sessionStatus[message.eid] = 'CLOSED';
+        // send to app
+        if (connections[message.id]) {
+          connections[message.id].forEach((ws) => {
+            sendPacket(ws, {action: "close"});
+          })
+        }
+        // send to partner
+        if (connections[pairings[message.id]]) {
+          connections[pairings[message.id]].forEach((ws) => {
+            sendPacket(ws, {action: "close"});
+          })
+        }
+        // send to partner's extension 
+        sessionStatus[userPairs[pairings[message.id]]] = 'CLOSED';
+        if (extensionConnections[userPairs[pairings[message.id]]] !== undefined) {
+          extensionConnections[userPairs[pairings[message.id]]].forEach((ws) => {
+            sendPacket(ws, {action: "close", id: pairings[message.id], partnerId: message.id});
+          })
+        }
+
+        // send to self (for LOC)
+        if (extensionConnections[message.eid] !== undefined) {
+          extensionConnections[message.eid].forEach((ws) => {
+            sendPacket(ws, {action: "close", id: message.id, partnerId: pairings[message.id]});
+          })
+        }
+        break;
+      case "loc":
+        var lineCount = message.count;
+        var id = message.id;
+        axios.put(`${process.env.API_URL}/users/${id}/linesOfCode/${lineCount}`).catch((err) => {
+          console.log(err);
+        })
+        break; 
+      case "clear":
+        var eid = message.eid;
+        var id = message.id;
+        // Clear user (app) information
+        if (userIDs.indexOf(id) >= 0) {
+          userIDs.splice(userIDs.indexOf(id), 1);
+        }
+        delete sessionStatus[eid];
+        delete userPairs[id];
+        delete pairings[id];
+        delete connections[id];
+        // Clear extension information
+        if (extensionIDs.indexOf(eid) >= 0) {
+          extensionIDs.splice(extensionIDs.indexOf(eid), 1);
+        }
+        delete extensionPairs[eid];
+        delete extensionConnections[eid];
+        // Check if other extension is gone (+ clear any other information)
+        break;
     }
   });
 })
 
-
 websocketRouter.ws('/ws', (ws, req) => {
-  clients.add(ws);
-  console.log('New client');
   sendPacket(ws, {action: "hello"});
   ws.on('message', (msg) => {
     const message = JSON.parse(msg);
-    console.log(message);
     switch (message.action) {
       case "hello":
         console.log("Said hello");
@@ -71,8 +129,9 @@ websocketRouter.ws('/ws', (ws, req) => {
         } else {
           userIDs.push(id);
           extensionPairs[eid] = id;
+          userPairs[id] = eid;
           sendPacket(ws, {action: "registered", id: id});
-
+          // Send the userID to the extension
           let pairedExtension = Object.keys(extensionPairs).find(key => extensionPairs[key] === id);
           if (pairedExtension !== undefined && extensionConnections[pairedExtension] !== undefined) {
             extensionConnections[pairedExtension].forEach((ws) => {
@@ -92,10 +151,22 @@ websocketRouter.ws('/ws', (ws, req) => {
           sendPacket(ws, {action: "start", partner: message.id2});
           // sendPacket()
               
+          // send 
           if (!(connections[message.id2] === undefined)) {
             connections[message.id2].forEach((ws) => {
               sendPacket(ws, {action: "start", partner: message.id1});
+              if (extensionConnections[userPairs[message.id2]] !== undefined) {
+                extensionConnections[userPairs[message.id2]].forEach((ws) => {
+                  sendPacket(ws, { action: "start", partnerID: message.id1});
+                })
+              }
             })
+            var partnerId = message.id2;
+            if (extensionConnections[userPairs[message.id1]] !== undefined) {
+              extensionConnections[userPairs[message.id1]].forEach((ws) => {
+                sendPacket(ws, { action: "start", partnerID: partnerId});
+              })
+            }
           }
                 
         } else {
@@ -104,19 +175,27 @@ websocketRouter.ws('/ws', (ws, req) => {
 
         break;
       case "close":
-        sendPacket(ws, {action: "close"});
-        connections[pairings[message.id]].forEach((ws) => {
-          sendPacket(ws, {action: "close"});
-        });
-        let pairedExtension = Object.keys(extensionPairs).find(key => extensionPairs[key] === message.id);
-        delete connections[message.id];
-        extensions.delete(extensionConnections[pairedExtension]);
-        delete extensionConnections[pairedExtension];
-        userIDs.splice(userIDs.indexOf(message.id), 1);
-        extensionIDs.splice(extensionID.indexOf(pairedExtension), 1);
-        delete pairings[message.id];
-        delete extensionPairs[pairedExtension];
-        clients.delete(ws);
+        // Send to partner
+        if (connections[pairings[message.id]]) {
+          connections[pairings[message.id]].forEach((ws) => {
+            sendPacket(ws, {action: "close"});
+          });
+        }
+        // Send to extension
+        sessionStatus[message.eid] = 'CLOSED';
+        if (extensionConnections[message.eid]) {
+          extensionConnections[message.eid].forEach((ws) => {
+            sendPacket(ws, {action: "close", id: message.id, eid: userPairs[message.id]});
+          })
+        }
+        // Send to partner's extension 
+        sessionStatus[userPairs[pairings[message.id]]] = 'CLOSED';
+        if (extensionConnections[userPairs[pairings[message.id]]] !== undefined) {
+          extensionConnections[userPairs[pairings[message.id]]].forEach((ws) => {
+            sendPacket(ws, {action: "close", id: pairings[message.id], partnerId: message.id});
+          })
+        }
+
         break;
       case "keepalive":
         sendPacket(ws, {action: "keepalive"});
@@ -129,23 +208,17 @@ websocketRouter.ws('/ws', (ws, req) => {
         if (!(extensionId in extensionIDs)) {
           extenionIDs.push(extensionId);
         }
-        sendPacket(ws, { action: "registered1", id: extensionId });
+        sendPacket(ws, { action: "registered", id: extensionId });
         if (extensionPairs[extensionId] !== undefined) {
           sendPacket(ws, { action: "paired", id: extensionPairs[extensionId]});
         } 
         break;
-      case "loc":
-        console.log("The user typed " + msg.count + "words.");
-        break;
-      default:
-        console.log("WS: idk man");
     }
   });
   
 
   ws.on('close', e => {
     // closed(ws);
-    clients.delete(ws);
     console.log('client closed');
   });
 
@@ -157,7 +230,6 @@ function sendPacket(ws, data) {
 }
 
 function pair(uid1, uid2) {
-
   let validPair = true;
   let msg = "";
   if (uid1 in pairings || uid2 in pairings) {
@@ -175,6 +247,5 @@ function pair(uid1, uid2) {
   }
   return { 'worked': validPair, 'message': msg };
 }
-
 
 module.exports = websocketRouter;

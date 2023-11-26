@@ -8,7 +8,7 @@ import cx from 'classnames';
 import Emotions from './Emotions';
 import axios from 'axios';
 
-const VideoCall=({userId, partnerId, stream, caller})=> {  
+const VideoCall=({userId, partnerId, stream, caller, active})=> {  
     const partnerVideoRef = React.useRef(null);
     const videoRef = React.useRef(null);
     const [muted, setMuted] = React.useState(false);
@@ -27,8 +27,8 @@ const VideoCall=({userId, partnerId, stream, caller})=> {
         }
         //establish connection to signalling server
         const peer = new Peer(userId, {
-            host: 'sd-vm01.csc.ncsu.edu',
-            path: "/webrtc/myapp"
+            host: process.env.REACT_APP_PEER_HOST,
+            path: process.env.REACT_APP_PEER_PATH
         });
 
         //once connection is established, log id and send a message to peer for debugging
@@ -64,7 +64,7 @@ const VideoCall=({userId, partnerId, stream, caller})=> {
     React.useEffect(() => {
         const fetchData = async () => {
             try {
-                await axios.post(`https://sd-vm01.csc.ncsu.edu/server/api/sessions/${userId}/${partnerId}`);
+                await axios.post(`${process.env.REACT_APP_API_URL}/sessions/${userId}/${partnerId}`);
                 setIsInDatabase(true);
             } catch (error) {
                 console.log(error);
@@ -105,7 +105,7 @@ const VideoCall=({userId, partnerId, stream, caller})=> {
                 </div>
                 {/* <video muted={true} width={640} height={360} ref={videoRef} autoPlay/> */}
             </div>
-            { isPaired && videoRef.current !== null &&  
+            { isPaired && videoRef.current !== null && active &&  
             <>
                 <Emotions videoStream={stream} id={userId} ref={videoRef}/>
                 <Voice userId={userId} stream={stream}/>

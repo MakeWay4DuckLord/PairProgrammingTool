@@ -4,7 +4,7 @@ import WebSocket from 'isomorphic-ws'
 
 import {getEID} from './index.js'
 
-export const ws = new WebSocket('wss://sd-vm01.csc.ncsu.edu/server/ws');
+export const ws = new WebSocket(process.env.REACT_APP_WEBSOCKET_URL);
 var userId;
 var idRegistered = false;
 
@@ -13,7 +13,7 @@ export const generateId = () => {
   return userId;
 }
 
-export const registerId = (id, setId, setAction, setPartnerId) => {
+export const registerId = (id, setId, setAction, setPartnerId, setSessionActive) => {
   if (!idRegistered) {
     // wait for connection to establish
     ws.onopen = () => {
@@ -44,6 +44,8 @@ export const registerId = (id, setId, setAction, setPartnerId) => {
           sleep(10000).then(() => {
             ws.send(JSON.stringify({action: "keepalive", id: id}));
           })
+        } else if (JSON.parse(event.data).action === 'close') {
+          setSessionActive(false);
         }
       });
     }
@@ -53,6 +55,12 @@ export const registerId = (id, setId, setAction, setPartnerId) => {
 export const createPair = (id, partnerId, setMessage) => {
   ws.send(JSON.stringify({
     action: "pair", id1: id, id2: partnerId
+  }));
+} 
+
+export const endSession = (id) => {
+  ws.send(JSON.stringify({
+    action: "close", id: id, eid: getEID()
   }));
 }
 

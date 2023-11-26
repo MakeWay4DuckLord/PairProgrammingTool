@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { generateId, createPair, registerId } from './client.js';
+import { generateId, createPair, endSession, registerId } from './client.js';
 import VideoCall from './components/VideoCall';
 import CreateSession from './components/CreateSession';
 import Waiting from './components/Waiting';
@@ -13,6 +13,7 @@ const App = () => {
     const [action, setAction] = React.useState('');
     const [caller, setCaller] = React.useState(false);
     const [stream, setStream] = React.useState(null);
+    const [sessionActive, setSessionActive] = React.useState(true);
 
     React.useEffect(() => {
         const getUserMedia = async () => {
@@ -44,13 +45,21 @@ const App = () => {
         setPaired(true);
     }
 
-    registerId(userId, setUserId, setAction, setPartnerId);
+    React.useEffect(() => {
+        if (paired) {
+            window.addEventListener("beforeunload", () => {  
+                endSession(userId);
+            });
+        }
+    }, [paired])
+
+    registerId(userId, setUserId, setAction, setPartnerId, setSessionActive);
     
     return (
         <div className="App">
             {!permissionsGranted && <Waiting />}
             {permissionsGranted && !paired && <CreateSession onSubmit={onSubmit} error={error} userId={userId}/>}
-            {permissionsGranted && paired && <VideoCall userId={userId} stream={stream} partnerId={partnerId} caller={caller}/>}
+            {permissionsGranted && paired && <VideoCall userId={userId} stream={stream} partnerId={partnerId} caller={caller} active={sessionActive}/>}
         </div>
     );
 };

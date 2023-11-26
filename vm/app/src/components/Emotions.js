@@ -98,7 +98,7 @@ const Emotions = React.forwardRef(({ videoStream, id}, ref) => {
   
     if (numOfRequests >= (score_interval / emotion_interval)) {
       try {
-        axios.put(`https://sd-vm01.csc.ncsu.edu/server/api/users/${id}/expressionScore/${score}`)
+        axios.put(`${process.env.REACT_APP_API_URL}/users/${id}/expressionScore/${score}`)
           .then(() => {
             // Handle success if needed
           })
