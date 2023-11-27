@@ -33,7 +33,8 @@ const Emotions = React.forwardRef(({ videoStream, id}, ref) => {
 
 
   useEffect(() => {
-    // Handle WebSocket events when the socket is set
+    // Handle WebSocket events when the socket is se
+    let captureInterval;
     if (socket) {
 
       const video = ref.current;
@@ -57,8 +58,9 @@ const Emotions = React.forwardRef(({ videoStream, id}, ref) => {
 	      
       };
 
-      const captureInterval = setInterval(captureAndSendFrame, emotion_interval);
-
+      captureInterval = setInterval(captureAndSendFrame, emotion_interval);
+	
+      captureAndSendFrame();
       socket.onerror = (error) => {
         console.error('WebSocket error:', error);
       };
@@ -82,10 +84,26 @@ const Emotions = React.forwardRef(({ videoStream, id}, ref) => {
             setNumOfRequests((prevNumOfRequests) => prevNumOfRequests + 1);
           }
         }
-      };      
+      };     
+      
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'hidden') {
+                console.log('Tab is not visible, continue processing');
+                captureAndSendFrame(); // Send a frame immediately upon tab visibility change
+            } else {
+                console.log('Tab is visible');
+            }
+        };
+        
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        
+        return () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+            clearInterval(captureInterval); 
+        };
 
     }
-  }, [socket]);
+  }, [socket, ref]);
 
   useEffect(() => {
     var score = 0;
@@ -97,10 +115,11 @@ const Emotions = React.forwardRef(({ videoStream, id}, ref) => {
     }
   
     if (numOfRequests >= (score_interval / emotion_interval)) {
+  
       try {
         axios.put(`${process.env.REACT_APP_API_URL}/users/${id}/expressionScore/${score}`)
           .then(() => {
-            // Handle success if needed
+            console.log("updates emotion score");
           })
           .catch((error) => {
             console.error("Error in axios.put:", error);
@@ -108,6 +127,7 @@ const Emotions = React.forwardRef(({ videoStream, id}, ref) => {
       } catch (error) {
         console.error("Error in axios.put:", error);
       }
+  
       score = 0;
       setNumOfRequests(0);
     }
