@@ -6,7 +6,8 @@ const userSchema = new Schema({
     lines_of_code: Number,
     num_role_changes: Number,
     expression_scores: [Number],
-    num_interruptions: Number    
+    num_interruptions: Number,
+    num_utterances: Number   
 });
 
 module.exports = mongoose.model("User", userSchema);

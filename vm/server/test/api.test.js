@@ -49,6 +49,7 @@ describe("session", () => {
                 const user2 = await supertest(app).get('/api/users/User2');
                 expect(user2.statusCode).toBe(200);
                 expect(user2.body.user_id).toEqual("User2");
+                expect(user2.body.num_utterances).toEqual(0);
 
             });
         });
@@ -75,6 +76,10 @@ describe("session", () => {
             });
         });
     });
+
+    describe("Retrieving a user's partner id", () => {
+
+    });
 });
 
 describe("utterance", () => {
@@ -97,6 +102,11 @@ describe("utterance", () => {
                 expect(res.body.start_time).toEqual(1000);
                 expect(res.body.end_time).toEqual(1500);
                 expect(res.body.transcript).toEqual("Hello World");
+
+                const user1 = await supertest(app).get('/api/users/User1');
+                expect(user1.body.num_utterances).toEqual(1);
+
+
             });
         });
 
