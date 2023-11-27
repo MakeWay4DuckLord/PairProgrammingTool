@@ -26,7 +26,8 @@ apiRouter.post("/sessions/:user1_id/:user2_id", async (req, res) => {
         lines_of_code: 0,
         num_role_changes: 0,
         expression_scores: [0],
-        num_interruptions: 0    
+        num_interruptions: 0 ,
+        num_utterances: 0   
     });
 
     const user2 = new User({
@@ -34,7 +35,8 @@ apiRouter.post("/sessions/:user1_id/:user2_id", async (req, res) => {
         lines_of_code: 0,
         num_role_changes: 0,
         expression_scores: [0],
-        num_interruptions: 0    
+        num_interruptions: 0,
+        num_utterances: 0    
     });
 
     try {
@@ -65,15 +67,22 @@ apiRouter.post("/utterances", async (req, res) => {
     });
     try {
         const sessionUser = await Session.findOne({ $or: [{ user1_id: req.body.user_id }, { user2_id: req.body.user_id }] });
-
         if (!sessionUser) {
             return res.status(409).send("A session does not exist with these users");
         }
+        const user = await User.findOne({ user_id: req.body.user_id });
+        //update user's utterance count
+        const utteranceUpdate = user.num_utterances + 1;
+        await User.updateOne(
+            { user_id: req.body.user_id },
+            { num_utterances: utteranceUpdate });
 
+            
         await utterance.save();
         return res.send(utterance);
+
     } catch(err) {
-        res.status(500).send("Failed to insert Utterance");
+        res.status(500).send("Failed to insert Utterance" + err);
     }  
 });
 
@@ -217,4 +226,5 @@ apiRouter.put('/users/:user_id/linesOfCode/:line_count', async (req, res) => {
     }
 });
 
-module.exports = apiRouter
+
+module.exports = apiRouter;
