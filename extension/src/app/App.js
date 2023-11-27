@@ -52,7 +52,7 @@ const App = () => {
     <div className={styles.App}>
       {page === '' && <a href={url}><button>Create New Session</button><p>Or visit: <span> {url} </span></p></a>}
       {page === 'start' && <Session onSwitch={setPage}/>}
-      {page === 'end' && <EndSession onSwitch={setPage} />}
+      {page === 'end' && <EndSession onSwitch={setPage}/>}
     </div>
   );
 };
