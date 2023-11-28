@@ -1,41 +1,55 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import axios from 'axios'; // You may want to mock Axios for testing
 import EndSession from '../../src/app/components/EndSession';
+import { it } from 'mocha';
+import '@testing-library/jest-dom'
 
-// Mock the module that contains the Score component
-jest.mock('../../src/app/components/Score', () => ({ number }) => <div data-testid="mocked-score">{number}</div>);
+// Mocking Axios to avoid actual API calls during testing
+jest.mock('axios');
 
-// Mock the module that contains the PiChart component
-jest.mock('../../src/app/components/PiChart', () => () => <div data-testid="mocked-pi-chart"></div>);
-
-// Mock the module that contains the Accordion component
-jest.mock('../../src/app/components/Accordion', () => ({ title, content }) => (
-  <div data-testid="mocked-accordion">
-    <div data-testid="mocked-accordion-title">{title}</div>
-    <div data-testid="mocked-accordion-content">{content}</div>
-  </div>
-));
+// Mock isomorphic-ws
+jest.mock('isomorphic-ws', () => {
+  class MockWebSocket {
+    constructor(url) {
+      this.url = url;
+      this.onopen = null;
+      this.addEventListener = jest.fn();
+      this.send = jest.fn();
+    }
+  }
+  return MockWebSocket;
+});
 
 describe('EndSession Component', () => {
-  it('renders EndSession component with correct elements', () => {
-    render(<EndSession onSwitch={() => {}} />);
-    
-    // Check if the main container is rendered
-    expect(screen.getByTestId('mocked-score')).toBeInTheDocument();
+  test('renders the component and checks if the report is closed when the button is clicked', async () => {
+    // Mocking Axios responses for the component's API calls
+    axios.get.mockResolvedValueOnce({ data: { lines_of_code: [10, 20] } });
+    axios.get.mockResolvedValueOnce({ data: 2 });
+    axios.get.mockResolvedValueOnce({ data: [1, 2, 3] });
 
-    // Check if the button is rendered
-    expect(screen.getByText('End Session')).toBeInTheDocument();
-  });
+    // Mocking the clearSession function
+    const clearSessionMock = jest.fn();
 
-  it('calls onSwitch prop when the "End Session" button is clicked', () => {
-    const mockOnSwitch = jest.fn();
-    render(<EndSession onSwitch={mockOnSwitch} />);
+    // Render the component
+    render(<EndSession onSwitch={clearSessionMock} />);
 
-    // Click the "End Session" button
-    fireEvent.click(screen.getByText('End Session'));
+    // Wait for the component to fetch data and update
+    await waitFor(() => {
+      expect(screen.getByText("Today's Collaboration Score")).toBeInTheDocument();
+    });
 
-    // Check if the onSwitch function is called
-    expect(mockOnSwitch).toHaveBeenCalledWith('end');
+    // Check if the accordions are rendered
+    expect(screen.getByText("Your communication style was")).toBeInTheDocument();
+    expect(screen.getByText("You interrupted your partner")).toBeInTheDocument();
+    expect(screen.getByText("Your leadership style was")).toBeInTheDocument();
+    expect(screen.getByText("You displayed a")).toBeInTheDocument();
+
+    // Click the close report button
+    fireEvent.click(screen.getByText("Close Report"));
+
+    // Check if the clearSession function is called
+    expect(clearSessionMock).toHaveBeenCalled();
   });
 });
+
