@@ -39,6 +39,7 @@ const EndSession = ({ onSwitch }) => {
       console.error('An error occurred:', error);
     }
   };
+  
 
   const leadershipStyleOptions = ["AUTHORITATIVE", "DEMOCRATIC"];
   const communicationStyleOptions = ["VERBAL", "NON-VERBAL"];
@@ -48,7 +49,6 @@ const EndSession = ({ onSwitch }) => {
     try {
       return axios.get(`${process.env.REACT_APP_WEBPAGE_URL}/server/api/users/${userId}`)
         .then(responseUser => {
-          console.log(responseUser);
           const LOCUser = responseUser.data.lines_of_code;
 
           return axios.get(`${process.env.REACT_APP_WEBPAGE_URL}/server/api/users/${partnerId}`)
