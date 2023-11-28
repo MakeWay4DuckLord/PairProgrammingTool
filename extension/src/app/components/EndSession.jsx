@@ -15,32 +15,6 @@ const EndSession = ({ onSwitch }) => {
   const [selfEfficacy, setSelfEfficacy] = React.useState('');
   const [userInterruptions, setUserInterruptions] = React.useState(null);
 
-  // const completeSession = () => {
-  //   try {
-  //     const report = {
-  //       user_id: userId,
-  //       primary_communication: "",
-  //       leadership_style: leadershipStyle,
-  //       communication_style: communicationStyle,
-  //       self_efficacy_level: selfEfficacy
-  //     }
-      
-  //     return axios.post(`${process.env.REACT_APP_WEBPAGE_URL}/server/api/reports`, report)
-  //   } catch (error) {
-  //     console.error('Failed to update report Error:', error);
-  //   }
-
-  //   try {
-  //     return axios.delete(`${process.env.REACT_APP_WEBPAGE_URL}/server/api/utterances`)
-  //   } catch (error) {
-  //     console.error('Failed to delete utterances Error:', error);
-  //   }
-
-  //   clearSession();
-  //   onSwitch('');
-
-  // };
-
   const completeSession = async () => {
     try {
       const report = {
