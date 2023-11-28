@@ -32,7 +32,7 @@ export const registerId = (id, setPage) => {
           userId = JSON.parse(event.data).id;
         } else if (JSON.parse(event.data).action === 'close') {
           userId = JSON.parse(event.data).id;
-          partnerId = JSON.parse(event.data).partnerID;
+          partnerId = JSON.parse(event.data).partnerId;
           setPage('end');
         }
       });
