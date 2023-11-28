@@ -2,6 +2,8 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import axios from 'axios'; // You may want to mock Axios for testing
 import EndSession from '../../src/app/components/EndSession';
+import { it } from 'mocha';
+import '@testing-library/jest-dom'
 
 // Mocking Axios to avoid actual API calls during testing
 jest.mock('axios');
