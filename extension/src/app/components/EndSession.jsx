@@ -154,7 +154,7 @@ const EndSession = ({ onSwitch }) => {
     }
 
     var interColab
-    if ((Interruptions[0] + Interruptions[1]) == 0){
+    if ((Interruptions[0] + Interruptions[1]) === 0){
         interColab = 10;
     }
     else{
