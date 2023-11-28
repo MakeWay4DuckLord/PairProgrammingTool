@@ -5,8 +5,6 @@ const extensionID = generateEID();
 var appID;
 var lineNum = 0;
 var active;
-// var orange = vscode.window.createOutputChannel("Orange"); // Creates an output tab named orange
-// orange.show();
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -26,7 +24,6 @@ function connect(ws) {
 		ws = new WebSocket(`wss://sd-vm01.csc.ncsu.edu/server/extension/ws`);
 		return ws;
 	} catch (e) {
-		// orange.appendLine(e.message);
 	}
 }
 
@@ -47,20 +44,17 @@ function activate(context) {
 	ws.onopen = () => {
 		ws.addEventListener("message", (event) => {
 			let msg = JSON.parse(event.data);
-			// orange.appendLine(msg);
 			switch (msg.action) {
 				case "hello":
 					ws.send(JSON.stringify({action: "hello"}));
 					ws.send(JSON.stringify({action: "extensionId", eid: extensionID }));
 					break;
 				case "registered":
-					// orange.appendLine("Registered with server: " + msg.id);
 					sleep(10000).then(() => {
 						ws.send(JSON.stringify({ action: "keepalive" }));
 					})
 					break;
 				case "paired":
-					// orange.appendLine("Paired id: " + msg.id);
 					if (!appID) {
 						lineNum = 0;
 						if (vscode.window.activeTextEditor) {
@@ -101,7 +95,6 @@ function activate(context) {
 					})
 					break;
 				default:
-					// orange.appendLine("WS: idk man\n" + msg);
 					break;
 			}
 		});
@@ -109,16 +102,23 @@ function activate(context) {
 	}
 	
 	var newLines;
-	vscode.workspace.onDidSaveTextDocument(function(e) {
-		newLines = vscode.window.activeTextEditor.document.lineCount;
-		lineNum += newLines - currentLines;
-		currentLines = newLines;
-		if (appID && active) {
-			ws.send(JSON.stringify({action: "loc", id: appID, count: lineNum}));
+	// vscode.workspace.onDidSaveTextDocument(function(e) {
+	vscode.workspace.onDidChangeTextDocument(function(e) {
+		if (e.document.uri.path !== "extension-output-undefined_publisher.extension-#1-Orange")  {
+			newLines = vscode.window.activeTextEditor.document.lineCount;
+			lineNum += newLines - currentLines;
+			currentLines = newLines;
+			if (appID && active) {
+				ws.send(JSON.stringify({action: "loc", id: appID, count: lineNum}));
+			}
 		}
-		// orange.appendLine("Saving: " + lineNum);
+		
 	})
 
+	vscode.window.onDidChangeActiveTextEditor(function(e) {
+		orange.appendLine("changed");
+		currentLines = vscode.window.activeTextEditor.document.lineCount;
+	})
 }
 
 // runs when extension deactivates
