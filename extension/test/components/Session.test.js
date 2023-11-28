@@ -3,6 +3,19 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Session from '../../src/app/components/Session';
 
+// Mock isomorphic-ws
+jest.mock('isomorphic-ws', () => {
+  class MockWebSocket {
+    constructor(url) {
+      this.url = url;
+      this.onopen = null;
+      this.addEventListener = jest.fn();
+      this.send = jest.fn();
+    }
+  }
+  return MockWebSocket;
+});
+
 // Mock the PiChart and Accordion components
 jest.mock('../../src/app/components/PiChart', () => ({ subject, subject1, subject2, metric, val1, val2 }) => (
   <div data-testid="mocked-pi-chart">

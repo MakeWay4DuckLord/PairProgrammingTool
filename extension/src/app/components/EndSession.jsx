@@ -15,10 +15,57 @@ const EndSession = ({ onSwitch }) => {
   const [selfEfficacy, setSelfEfficacy] = React.useState('');
   const [userInterruptions, setUserInterruptions] = React.useState(null);
 
-  const completeSession = () => {
-    clearSession();
-    onSwitch('');
+  // const completeSession = () => {
+  //   try {
+  //     const report = {
+  //       user_id: userId,
+  //       primary_communication: "",
+  //       leadership_style: leadershipStyle,
+  //       communication_style: communicationStyle,
+  //       self_efficacy_level: selfEfficacy
+  //     }
+      
+  //     return axios.post(`${process.env.REACT_APP_WEBPAGE_URL}/server/api/reports`, report)
+  //   } catch (error) {
+  //     console.error('Failed to update report Error:', error);
+  //   }
+
+  //   try {
+  //     return axios.delete(`${process.env.REACT_APP_WEBPAGE_URL}/server/api/utterances`)
+  //   } catch (error) {
+  //     console.error('Failed to delete utterances Error:', error);
+  //   }
+
+  //   clearSession();
+  //   onSwitch('');
+
+  // };
+
+  const completeSession = async () => {
+    try {
+      const report = {
+        user_id: userId,
+        primary_communication: "",
+        leadership_style: leadershipStyle,
+        communication_style: communicationStyle,
+        self_efficacy_level: selfEfficacy,
+      };
+  
+      await axios.post(`${process.env.REACT_APP_WEBPAGE_URL}/server/api/reports`, report);
+      console.log('Report updated successfully');
+  
+      // Continue with the next asynchronous operation
+      await axios.delete(`${process.env.REACT_APP_WEBPAGE_URL}/server/api/utterances`);
+      console.log('Utterances deleted successfully');
+  
+      // The last two lines will be reached only if both operations succeed
+      clearSession();
+      onSwitch('');
+    } catch (error) {
+      console.error('An error occurred:', error);
+    }
   };
+  
 
   const leadershipStyleOptions = ["AUTHORITATIVE", "DEMOCRATIC"];
   const communicationStyleOptions = ["VERBAL", "NON-VERBAL"];
@@ -34,6 +81,23 @@ const EndSession = ({ onSwitch }) => {
             .then(responsePartner => {
               const LOCPartner = responsePartner.data.lines_of_code;
               return [LOCUser, LOCPartner];
+            });
+        });
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  const fetchUterrances = () => {
+    try {
+      return axios.get(`${process.env.REACT_APP_WEBPAGE_URL}/server/api/users/${userId}`)
+        .then(responseUser => {
+          const NUTUser = responseUser.data.num_utterances;
+
+          return axios.get(`${process.env.REACT_APP_WEBPAGE_URL}/server/api/users/${partnerId}`)
+            .then(responsePartner => {
+              const NUTPartner = responsePartner.data.num_utterances;
+              return [NUTUser, NUTPartner];
             });
         });
     } catch (error) {
@@ -70,12 +134,12 @@ const EndSession = ({ onSwitch }) => {
     }
   };
 
-  const calculateScores = (LOC, Interruptions, ExpressionScore) => {
+  const calculateScores = (LOC, Interruptions, ExpressionScore, Utterances) => {
 
     if ((LOC[0] + LOC[1]) == 0){
         setLeadershipStyle(leadershipStyleOptions[1]);
     }
-    else if (LOC[0]/(LOC[0] + LOC[1]) < .25 || LOC[0]/(LOC[0] + LOC[1]) > .75){
+    else if (LOC[0]/(LOC[0] + LOC[1]) < .35 || LOC[0]/(LOC[0] + LOC[1]) > .65){
         setLeadershipStyle(leadershipStyleOptions[0]);
     }
     else {
@@ -94,8 +158,22 @@ const EndSession = ({ onSwitch }) => {
     const nonZeroEntries = ExpressionScore.filter(entry => entry !== 0);
     const expRatio = ExpressionScore.length / nonZeroEntries.length;
 
-    if (expRatio > .5) {
+    var verbalRatio
+    if ((Utterances[0] + Utterances[1]) == 0){
+      verbalRatio = 0;
+    }
+    else{
+      verbalRatio = Utterances[0]/(Utterances[0] + Utterances[1]);
+    }
+
+    if (expRatio > .5 && verbalRatio < .5) {
         setCommunicationStyle(communicationStyleOptions[1]);
+    }
+    else if (expRatio < .5 && verbalRatio > .5) {
+        setCommunicationStyle(communicationStyleOptions[0]);
+    }
+    else if (expRatio < .5 && verbalRatio < .5) {
+      setCommunicationStyle(communicationStyleOptions[1]);
     }
     else {
         setCommunicationStyle(communicationStyleOptions[0]);
@@ -110,16 +188,6 @@ const EndSession = ({ onSwitch }) => {
     }
 
     setScore(((locColab + interColab) / 2).toFixed(1));
-
-    // if (expRatio > .5 && verbalRatio < .5) {
-    //     setCommunicationStyle("Non-Verabal");
-    // }
-    // else if (expRatio < .5 && verbalRatio > .5) {
-    //     setCommunicationStyle("Verbal")
-    // }
-    // else {
-    //     setCommunicationStyle("Verbal and Non-Verbal")
-    // }
 
     const length = ExpressionScore.length;
 
@@ -142,10 +210,10 @@ const EndSession = ({ onSwitch }) => {
         const sumMiddleThird = middleThird.reduce((acc, num) => acc + num, 0);
         const sumFinalThird = finalThird.reduce((acc, num) => acc + num, 0);
 
-        if (sumFinalThird >= (sumFirstThird + sumMiddleThird) / 2){
+        if (sumFirstThird <= ((sumFinalThird + sumMiddleThird)/2)){
             setSelfEfficacy(selfEfficacyOptions[0]);
         }
-        else if (sumFinalThird <= (sumFirstThird + sumMiddleThird) / 2){
+        else {
             setSelfEfficacy(selfEfficacy[1]);
         }
     }
@@ -153,21 +221,42 @@ const EndSession = ({ onSwitch }) => {
 };
 
   React.useEffect(() => {
-    if (userId && partnerId) {
-      fetchLinesOfCode()
-        .then(LOC => {
-          fetchInterruptions()
-            .then(Interruptions => {
-              setUserInterruptions(Interruptions[0]);
-              fetchExpressionScore()
-                .then(ExpressionScore => {
-                  calculateScores(LOC, Interruptions, ExpressionScore);
-                });
-            });
-        });
-    }
+    const fetchData = () => {
+      if (userId && partnerId) {
+        axios.get(`${process.env.REACT_APP_WEBPAGE_URL}/server/api/reports/${userId}`)
+          .then(responseUser => {
+            setCommunicationStyle(responseUser.data.communication_style);
+            setLeadershipStyle(responseUser.data.leadership_style);
+            setSelfEfficacy(responseUser.data.self_efficacy_level);
+          })
+          .catch(error => {
+            // Handle errors for the first axios call
+            console.error('Error fetching report:', error);
+  
+            // Proceed with other asynchronous operations
+            fetchLinesOfCode()
+              .then(LOC => {
+                fetchInterruptions()
+                  .then(Interruptions => {
+                    setUserInterruptions(Interruptions[0]);
+                    fetchExpressionScore()
+                      .then(ExpressionScore => {
+                        fetchUterrances()
+                          .then(Utterances => calculateScores(LOC, Interruptions, ExpressionScore, Utterances))
+                          .catch(nestedError => console.error('Error fetching utterances:', nestedError));
+                      })
+                      .catch(nestedError => console.error('Error fetching expression score:', nestedError));
+                  })
+                  .catch(nestedError => console.error('Error fetching interruptions:', nestedError));
+              })
+              .catch(nestedError => console.error('Error fetching lines of code:', nestedError));
+          });
+      }
+    };
+  
+    fetchData();
   }, [userId, partnerId]);
-
+  
   return (
     <div className={styles.SessionContainer}>
       <h1>Today's Collaboration Score</h1>
