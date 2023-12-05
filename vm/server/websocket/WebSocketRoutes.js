@@ -36,6 +36,9 @@ websocketRouter.ws('/extension/ws', (ws, req) => {
         if (extensionPairs[extensionId] !== undefined && sessionStatus[extensionId] !== 'CLOSED') {
           sessionStatus[extensionId] = 'ACTIVE';
           sendPacket(ws, { action: "paired", id: extensionPairs[extensionId]});
+          console.log(extensionId);
+          console.log(extensionPairs[extensionId]);
+          console.log(pairings);
           if (extensionPairs[extensionId] in pairings) {
             var partnerId = pairings[extensionPairs[extensionId]];
             sendPacket(ws, { action: "start", partnerID: partnerId});
