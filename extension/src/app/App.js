@@ -13,13 +13,14 @@ const App = () => {
   const [count, setCount] = React.useState(0);
   const [number, setNumber] = React.useState(0);
   // Register our extension ID
-  registerId(extensionID, setPage);
 
   React.useEffect(() => {
     if (page === '' && partnerId) {
       setUserId(null);
       setPartnerId(null);
     }
+    registerId(extensionID, setPage);
+    console.log(extensionID);
   }, [page])
 
   React.useEffect(() => {
