@@ -179,8 +179,6 @@ websocketRouter.ws('/ws', (ws, req) => {
 
         break;
       case "close":
-        // If we have a session (I.E. it is not already cleared)
-        if (sessionStatus[message.eid]) {
           // Send to partner
           if (connections[pairings[message.id]]) {
             connections[pairings[message.id]].forEach((ws) => {
@@ -201,7 +199,6 @@ websocketRouter.ws('/ws', (ws, req) => {
               sendPacket(ws, {action: "close", id: pairings[message.id], partnerId: message.id});
             })
           }
-        }
         break;
       case "keepalive":
         sendPacket(ws, {action: "keepalive"});
