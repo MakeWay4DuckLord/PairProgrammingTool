@@ -29,8 +29,10 @@ const EndSession = ({ onSwitch }) => {
       console.log('Report updated successfully');
   
       // Continue with the next asynchronous operation
-      await axios.delete(`${process.env.REACT_APP_WEBPAGE_URL}/server/api/utterances`);
-      console.log('Utterances deleted successfully');
+      if (axios.get(`${process.env.REACT_APP_WEBPAGE_URL}/server/api/reports/${partnerId}`)) {
+        await axios.delete(`${process.env.REACT_APP_WEBPAGE_URL}/server/api/utterances`);
+        console.log('Utterances deleted successfully');
+      }
   
       // The last two lines will be reached only if both operations succeed
       clearSession();
