@@ -6,7 +6,7 @@ const connectToMongoDB = async () => {
 
         // Connect to the MongoDb database that is running on the NCSU VM
 
-        mongoose.connect(`${process.env.MONGODB_URI}`, {
+        mongoose.connect(`${process.env.MONGODB_URI}${process.env.MONGO_INITDB_DATABASE}`, {
             auth: {
                 username: process.env.MONGO_USER,
                 password: process.env.MONGO_PASSWORD,

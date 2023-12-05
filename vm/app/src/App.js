@@ -45,13 +45,23 @@ const App = () => {
         setPaired(true);
     }
 
+    const onClose = React.useCallback((event) => {
+        endSession(userId);
+    }, [])
+
     React.useEffect(() => {
-        if (paired) {
-            window.addEventListener("beforeunload", () => {  
-                endSession(userId);
-            });
+        if (paired && sessionActive) {
+            window.addEventListener("beforeunload", onClose);
         }
-    }, [paired])
+        if (!sessionActive && paired) {
+            try {
+                window.removeEventListener("beforeunload", onClose);
+                console.log("Removed listener");
+            } catch (err) {
+                // 
+            }
+        }
+    }, [paired, sessionActive])
 
     registerId(userId, setUserId, setAction, setPartnerId, setSessionActive);
     

@@ -23,7 +23,7 @@ export const registerId = (id, setPage) => {
           idRegistered = true;
         // hello
         } else if (JSON.parse(event.data).action === 'start') {
-          partnerId = JSON.parse(event.data).partnerID;
+          partnerId = JSON.parse(event.data).partnerId;
         } else if (JSON.parse(event.data).action === 'keepalive') {
           sleep(10000).then(() => {
             ws.send(JSON.stringify({action: "keepalive", id: id}));
@@ -58,7 +58,6 @@ export const clearSession = () => {
   // Reset
   userId = null;
   partnerId = null;
-  extensionId = null;
   setTimeout(() => {
     ws.send(JSON.stringify({ action: "extensionId", eid: extensionId }));
   }, 100)
