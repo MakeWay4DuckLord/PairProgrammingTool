@@ -18,6 +18,7 @@ const App = () => {
     if (page === '' && partnerId) {
       setUserId(null);
       setPartnerId(null);
+      setCount(count + 1);
     }
     registerId(extensionID, setPage);
     console.log(extensionID);
