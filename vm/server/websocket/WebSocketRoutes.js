@@ -36,9 +36,6 @@ websocketRouter.ws('/extension/ws', (ws, req) => {
         if (extensionPairs[extensionId] !== undefined && sessionStatus[extensionId] !== 'CLOSED') {
           sessionStatus[extensionId] = 'ACTIVE';
           sendPacket(ws, { action: "paired", id: extensionPairs[extensionId]});
-          console.log(extensionId);
-          console.log(extensionPairs[extensionId]);
-          console.log(pairings);
           if (extensionPairs[extensionId] in pairings) {
             var partnerId = pairings[extensionPairs[extensionId]];
             sendPacket(ws, { action: "start", partnerID: partnerId});
@@ -91,6 +88,9 @@ websocketRouter.ws('/extension/ws', (ws, req) => {
       case "clear":
         var eid = message.eid;
         var id = message.id;
+        extensionConnections[eid].forEach((ws) => {
+          sendPacket(ws, {action: "clear"})
+        })
         // Clear user (app) information
         if (userIDs.indexOf(id) >= 0) {
           userIDs.splice(userIDs.indexOf(id), 1);
