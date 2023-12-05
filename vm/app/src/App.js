@@ -46,9 +46,7 @@ const App = () => {
     }
 
     const onClose = React.useCallback((event) => {
-        if (sessionActive) {
-            endSession(userId);
-        }
+        endSession(userId);
     }, [])
 
     React.useEffect(() => {
