@@ -65,6 +65,8 @@ websocketRouter.ws('/extension/ws', (ws, req) => {
         }
         // send to partner's extension 
         sessionStatus[userPairs[pairings[message.id]]] = 'CLOSED';
+        console.log("Sending closed message to partner.")
+        console.log(extensionConnections[userPairs[pairings[message.id]]]);
         if (extensionConnections[userPairs[pairings[message.id]]] !== undefined) {
           extensionConnections[userPairs[pairings[message.id]]].forEach((ws) => {
             sendPacket(ws, {action: "close", id: pairings[message.id], partnerId: message.id});
@@ -151,13 +153,13 @@ websocketRouter.ws('/ws', (ws, req) => {
         let returns = pair(message.id1, message.id2);
     
         if (returns.worked) {
-          sendPacket(ws, {action: "start", partner: message.id2});
+          sendPacket(ws, {action: "start", partnerId: message.id2});
           // sendPacket()
               
           // send 
           if (!(connections[message.id2] === undefined)) {
             connections[message.id2].forEach((ws) => {
-              sendPacket(ws, {action: "start", partner: message.id1});
+              sendPacket(ws, {action: "start", partnerId: message.id1});
               if (extensionConnections[userPairs[message.id2]] !== undefined) {
                 extensionConnections[userPairs[message.id2]].forEach((ws) => {
                   sendPacket(ws, { action: "start", partnerId: message.id1});

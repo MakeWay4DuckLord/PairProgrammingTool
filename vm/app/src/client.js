@@ -37,7 +37,7 @@ export const registerId = (id, setId, setAction, setPartnerId, setSessionActive)
         // else, error or start
         } else if (JSON.parse(event.data).action === 'start') {
           setAction(JSON.parse(event.data).action);
-          setPartnerId(JSON.parse(event.data).partner)
+          setPartnerId(JSON.parse(event.data).partnerId)
         } else if (JSON.parse(event.data).action === 'error') {
           setAction(JSON.parse(event.data).action);
         } else if (JSON.parse(event.data).action === 'keepalive') {
