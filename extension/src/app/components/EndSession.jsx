@@ -179,9 +179,9 @@ const EndSession = ({ onSwitch }) => {
         const middleThirdEnd = Math.floor((2 * length) / 3);
     
         // Use slice to get the subarrays for each third
-        const firstThird = array.slice(0, firstThirdEnd);
-        const middleThird = array.slice(middleThirdStart, middleThirdEnd);
-        const finalThird = array.slice(middleThirdEnd);
+        const firstThird = ExpressionScore.slice(0, firstThirdEnd);
+        const middleThird = ExpressionScore.slice(middleThirdStart, middleThirdEnd);
+        const finalThird = ExpressionScore.slice(middleThirdEnd);
     
         // Calculate the sum of each third
         const sumFirstThird = firstThird.reduce((acc, num) => acc + num, 0);
@@ -192,7 +192,7 @@ const EndSession = ({ onSwitch }) => {
             setSelfEfficacy(selfEfficacyOptions[0]);
         }
         else {
-            setSelfEfficacy(selfEfficacy[1]);
+            setSelfEfficacy(selfEfficacyOptions[1]);
         }
     }
 
@@ -200,6 +200,7 @@ const EndSession = ({ onSwitch }) => {
 
   React.useEffect(() => {
     const fetchData = () => {
+      console.log(partnerId);
       if (userId && partnerId) {
         axios.get(`${process.env.REACT_APP_WEBPAGE_URL}/server/api/reports/${userId}`)
           .then(responseUser => {

@@ -85,10 +85,11 @@ function activate(context) {
 							ws.send(JSON.stringify({action: "loc", id: appID, count: lineNum}));
 							active = false;
 							appID = null;
-							ws.send(JSON.stringify({action: "extensionId", eid: extensionID }));
 						}
 					}
 					break;
+				case "clear": 
+					ws.send(JSON.stringify({action: "extensionId", eid: extensionID }));
 				case "keepalive":
 					sleep(10000).then(() => {
 						ws.send(JSON.stringify({ action: "keepalive", eid: extensionID}));
