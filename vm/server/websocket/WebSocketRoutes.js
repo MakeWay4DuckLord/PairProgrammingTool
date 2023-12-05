@@ -175,27 +175,29 @@ websocketRouter.ws('/ws', (ws, req) => {
 
         break;
       case "close":
-        // Send to partner
-        if (connections[pairings[message.id]]) {
-          connections[pairings[message.id]].forEach((ws) => {
-            sendPacket(ws, {action: "close"});
-          });
+        // If we have a session (I.E. it is not already cleared)
+        if (sessionStatus[message.eid]) {
+          // Send to partner
+          if (connections[pairings[message.id]]) {
+            connections[pairings[message.id]].forEach((ws) => {
+              sendPacket(ws, {action: "close"});
+            });
+          }
+          // Send to extension
+          sessionStatus[message.eid] = 'CLOSED'
+          if (extensionConnections[message.eid]) {
+            extensionConnections[message.eid].forEach((ws) => {
+              sendPacket(ws, {action: "close", id: message.id, eid: userPairs[message.id]});
+            })
+          }
+          // Send to partner's extension 
+          sessionStatus[userPairs[pairings[message.id]]] = 'CLOSED';
+          if (extensionConnections[userPairs[pairings[message.id]]] !== undefined) {
+            extensionConnections[userPairs[pairings[message.id]]].forEach((ws) => {
+              sendPacket(ws, {action: "close", id: pairings[message.id], partnerId: message.id});
+            })
+          }
         }
-        // Send to extension
-        sessionStatus[message.eid] = 'CLOSED';
-        if (extensionConnections[message.eid]) {
-          extensionConnections[message.eid].forEach((ws) => {
-            sendPacket(ws, {action: "close", id: message.id, eid: userPairs[message.id]});
-          })
-        }
-        // Send to partner's extension 
-        sessionStatus[userPairs[pairings[message.id]]] = 'CLOSED';
-        if (extensionConnections[userPairs[pairings[message.id]]] !== undefined) {
-          extensionConnections[userPairs[pairings[message.id]]].forEach((ws) => {
-            sendPacket(ws, {action: "close", id: pairings[message.id], partnerId: message.id});
-          })
-        }
-
         break;
       case "keepalive":
         sendPacket(ws, {action: "keepalive"});
