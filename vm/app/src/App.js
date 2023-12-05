@@ -46,14 +46,21 @@ const App = () => {
     }
 
     React.useEffect(() => {
-        if (paired) {
+        if (paired && sessionActive) {
             window.addEventListener("beforeunload", () => {  
                 if (sessionActive) {
                     endSession(userId);
                 }
             });
         }
-    }, [paired])
+        if (!sessionActive && paired) {
+            window.removeEventListener("beforeunload", () => {  
+                if (sessionActive) {
+                    endSession(userId);
+                }
+            })
+        }
+    }, [paired, sessionActive])
 
     registerId(userId, setUserId, setAction, setPartnerId, setSessionActive);
     
