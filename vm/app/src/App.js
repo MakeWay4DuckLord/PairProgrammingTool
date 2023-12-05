@@ -45,18 +45,20 @@ const App = () => {
         setPaired(true);
     }
 
-    React.useEffect(() => {
-        const onUnload = () => {
-            if (sessionActive) {
-                endSession(userId);
-            }
+    const onUnload = () => {
+        if (sessionActive) {
+            endSession(userId);
         }
+    }
+
+    React.useEffect(() => {
         if (paired && sessionActive) {
             window.addEventListener("beforeunload", onUnload);
         }
         if (!sessionActive && paired) {
             try {
                 window.removeEventListener("beforeunload", onUnload);
+                console.log("Removed listener");
             } catch (err) {
                 // 
             }
