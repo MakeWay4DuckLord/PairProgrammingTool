@@ -174,14 +174,14 @@ apiRouter.put("/users/:user_id/expressionScore/:new_score", async (req, res) => 
     }
 });
 
-//Calculates the number of times a user has been interrupted by their partner
+//Calculates the number of times a user has interrupted their partner
 apiRouter.get('/utterances/interruptions/:user_id/:partner_id', async (req, res) => {
     const userId = req.params.user_id;
     const partnerId = req.params.partner_id;
     try {
         const sessionUser1 = await Session.findOne({ $or: [{ user1_id: req.params.user_id }, { user2_id: req.params.user_id }] });
         const sessionUser2 = await Session.findOne({ $or: [{ user1_id: req.params.partner_id }, { user2_id: req.params.partner_id }] });
-        const utterances = await Utterance.find({user_id: userId });
+        const parnterUtterances = await Utterance.find({user_id: partnerId });
 
         if (!sessionUser1 || !sessionUser2) {
             return res.status(409).send("A session does not exist with these users");
@@ -189,11 +189,11 @@ apiRouter.get('/utterances/interruptions/:user_id/:partner_id', async (req, res)
 
         var interruptionCount = 0;
 
-        for(const utterance of utterances) {
+        for(const utterance of parnterUtterances) {
             const start = utterance.start_time;
             const end = utterance.end_time;
 
-            const interruptions = await Utterance.find({user_id: partnerId, start_time: {$gt : start, $lte: end}});
+            const interruptions = await Utterance.find({user_id: userId, start_time: {$gt : start, $lte: end}});
 
             if(interruptions) {
                 interruptionCount += interruptions.length;

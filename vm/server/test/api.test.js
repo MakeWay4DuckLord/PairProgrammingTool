@@ -191,11 +191,11 @@ describe("utterance", () => {
                 });
 
                 //Get interruptions
-                const res1 = await supertest(app).get('/api/utterances/interruptions/User1/User2');
+                const res1 = await supertest(app).get('/api/utterances/interruptions/User2/User1');
                 expect(res1.statusCode).toBe(200);
                 expect(res1.text).toEqual("4");
 
-                const res2 = await supertest(app).get('/api/utterances/interruptions/User2/User1');
+                const res2 = await supertest(app).get('/api/utterances/interruptions/User1/User2');
                 expect(res2.statusCode).toBe(200);
                 expect(res2.text).toEqual("0");
                 
