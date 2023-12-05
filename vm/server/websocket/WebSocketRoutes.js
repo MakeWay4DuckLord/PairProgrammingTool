@@ -65,8 +65,7 @@ websocketRouter.ws('/extension/ws', (ws, req) => {
         }
         // send to partner's extension 
         sessionStatus[userPairs[pairings[message.id]]] = 'CLOSED';
-        console.log("Sending closed message to partner.")
-        console.log(extensionConnections[userPairs[pairings[message.id]]]);
+        console.log("Sending closed message to partner.");
         if (extensionConnections[userPairs[pairings[message.id]]] !== undefined) {
           extensionConnections[userPairs[pairings[message.id]]].forEach((ws) => {
             sendPacket(ws, {action: "close", id: pairings[message.id], partnerId: message.id});
