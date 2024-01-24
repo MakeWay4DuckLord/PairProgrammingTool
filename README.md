@@ -1,16 +1,2 @@
-# Pair Programming Extension
-
-# Running the Extension
-
-1. Open the folder in VS Code.
-2. Navigate your terminal to the extension folder in the main directory.
-3. Type 'npm install'
-4. Type 'npm run watch'
-5. Open the extension.js file in your editor
-6. Click 'F5' (or fn + F5 on Mac)
-
-# Running web app
-
-1. cd into app
-2. npm install
-3. npm run start
+# Pair Programming Tool
+This was my senior design project in fall 2023 at NCSU, along with my teammates Terrel Dixon, Lindsey Dunkly, Megan Planchock, and Sam Stone. The project consists of a web app and a VS Code extension, which allow users to pair with one another to join a pair programming session with video call, and uses voice and face recognition AI models to provide live feedback and post session collaboration report. Along with the codebase, this repository includes detailed documentation in the form of our teams [Final Progress Report](documentation/Final%20Progress%20Report.yml), which contains our problem statement, requirements, design, and testing report. The [Installation Guide](documentation/Installation%20Guide.pdf) has instructions for installing and running the project, the [Developer's Guide](documentation/Developer's%20Guide.pdf) contains advice for adding more functionality, and the [User's Guide](documentation/User's%20Guide.pdf) provides a walkthrough of how to use the extension.
